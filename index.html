@@ -1,150 +1,19 @@
 <!DOCTYPE html>
 <html lang="it">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>Soldi</title>
 
-    <style>
-        * {
-            box-sizing: border-box;
-        }
+    <link rel="stylesheet" href="style.css">
 
-        body {
-            margin: 0;
-            background: #202020;
-            color: white;
-            font-family: Arial, sans-serif;
-        }
-
-        header {
-            text-align: center;
-            padding: 20px;
-        }
-
-        header h1 {
-            margin: 0;
-            font-size: 32px;
-        }
-
-        #table {
-            max-width: 1100px;
-            min-height: 700px;
-            margin: 0 auto 30px auto;
-            padding: 30px;
-            background: #356b3f;
-            border-radius: 20px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            gap: 30px;
-        }
-
-        .players {
-            display: flex;
-            justify-content: space-between;
-            gap: 20px;
-        }
-
-        .player {
-            flex: 1;
-            background: rgba(0, 0, 0, 0.25);
-            border-radius: 12px;
-            padding: 15px;
-            text-align: center;
-        }
-
-        .player-name {
-            font-weight: bold;
-            margin-bottom: 12px;
-        }
-
-        .cards {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        .card {
-            width: 65px;
-            height: 90px;
-            background: #f4f1e8;
-            color: #222;
-            border-radius: 7px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            box-shadow: 0 3px 5px rgba(0, 0, 0, 0.35);
-        }
-
-        .center {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 50px;
-        }
-
-        .market {
-            text-align: center;
-        }
-
-        .market-title {
-            margin-bottom: 10px;
-            font-weight: bold;
-        }
-
-        .message {
-            text-align: center;
-            font-size: 18px;
-        }
-
-        .actions {
-            text-align: center;
-        }
-
-        button {
-            border: 0;
-            border-radius: 8px;
-            padding: 12px 24px;
-            font-size: 16px;
-            cursor: pointer;
-            margin: 5px;
-        }
-
-        button:hover {
-            transform: translateY(-1px);
-        }
-
-        #hand {
-            background: rgba(0, 0, 0, 0.25);
-            border-radius: 12px;
-            padding: 20px;
-        }
-
-        #hand h2 {
-            text-align: center;
-            font-size: 18px;
-        }
-
-        @media (max-width: 700px) {
-            #table {
-                margin: 0 10px 20px 10px;
-                padding: 15px;
-            }
-
-            .players {
-                flex-direction: column;
-            }
-
-            .center {
-                flex-direction: column;
-                gap: 20px;
-            }
-        }
-    </style>
 </head>
 
 <body>
@@ -159,6 +28,7 @@
 
         <div class="player">
             <div class="player-name">Bot 1</div>
+
             <div class="cards">
                 <div class="card">?</div>
                 <div class="card">?</div>
@@ -168,6 +38,7 @@
 
         <div class="player">
             <div class="player-name">Bot 2</div>
+
             <div class="cards">
                 <div class="card">?</div>
                 <div class="card">?</div>
@@ -177,6 +48,7 @@
 
         <div class="player">
             <div class="player-name">Bot 3</div>
+
             <div class="cards">
                 <div class="card">?</div>
                 <div class="card">?</div>
@@ -186,10 +58,14 @@
 
     </section>
 
+
     <section class="center">
 
         <div class="market">
-            <div class="market-title">Offerta A</div>
+
+            <div class="market-title">
+                Offerta A
+            </div>
 
             <div class="cards">
                 <div class="card">20</div>
@@ -197,10 +73,15 @@
                 <div class="card">50</div>
                 <div class="card">60</div>
             </div>
+
         </div>
 
+
         <div class="market">
-            <div class="market-title">Offerta B</div>
+
+            <div class="market-title">
+                Offerta B
+            </div>
 
             <div class="cards">
                 <div class="card">10</div>
@@ -208,35 +89,52 @@
                 <div class="card">70</div>
                 <div class="card">80</div>
             </div>
+
         </div>
 
     </section>
 
+
     <div class="message">
         Scegli le carte da utilizzare per la tua offerta.
     </div>
+
 
     <section id="hand">
 
         <h2>La tua mano</h2>
 
         <div class="cards">
+
             <div class="card">10</div>
             <div class="card">20</div>
             <div class="card">30</div>
             <div class="card">40</div>
             <div class="card">50</div>
             <div class="card">60</div>
+
         </div>
 
     </section>
 
+
     <section class="actions">
-        <button>Conferma offerta</button>
-        <button>Passa</button>
+
+        <button id="confirm-bid">
+            Conferma offerta
+        </button>
+
+        <button id="pass">
+            Passa
+        </button>
+
     </section>
 
 </main>
 
+
+<script src="game.js"></script>
+
 </body>
+
 </html>
