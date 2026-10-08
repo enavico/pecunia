@@ -388,3 +388,42 @@ function renderMarket() {
 
 // Disegna le offerte
 renderMarket();
+// ==========================================
+// CONFERMA OFFERTA DEL GIOCATORE
+// ==========================================
+
+function confirmBid() {
+
+    const player = game.players[0];
+
+    if (player.selectedCards.length === 0) {
+
+        alert("Seleziona almeno una carta.");
+
+        return;
+    }
+
+
+    player.bid = player.hand.filter(
+        card =>
+            player.selectedCards.includes(card.id)
+    );
+
+
+    console.log(
+        "Offerta del giocatore:",
+        player.bid
+    );
+}
+
+
+// ==========================================
+// PULSANTE CONFERMA OFFERTA
+// ==========================================
+
+document
+    .getElementById("confirm-bid")
+    .addEventListener(
+        "click",
+        confirmBid
+    );
