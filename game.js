@@ -5484,9 +5484,10 @@ function finishRound() {
 
 if (game.deck.length === 0) {
     game.finalRound = true;
-    addLog("Il mazzo è esaurito. Si gioca un ultimo round.");
+    addLog("Il mazzo è esaurito. Si procede al conteggio finale.");
+    finishGame();
+    return;
 }
-
 
     // --------------------------------------
     // NUOVA MANO
