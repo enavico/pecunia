@@ -28,6 +28,43 @@ const NUMBER_OF_PLAYERS = 4;
 
 
 // ==========================================
+// STATO DELLA PARTITA
+// ==========================================
+
+const game = {
+
+    round: 1,
+
+    deck: [],
+
+    players: [],
+
+    market: {
+
+        left: [],
+
+        right: []
+
+    },
+
+    phase: "bidding",
+
+    currentPlayerId: null,
+
+    removedCurrency: null,
+
+    gameOver: false,
+
+    finalRound: false,
+
+    resolutionQueue: [],
+
+    logs: []
+
+};
+
+
+// ==========================================
 // CREAZIONE DEL MAZZO
 // ==========================================
 
@@ -91,6 +128,7 @@ function shuffle(deck) {
 
     const shuffled = [...deck];
 
+
     for (
         let i = shuffled.length - 1;
         i > 0;
@@ -102,6 +140,7 @@ function shuffle(deck) {
                 Math.random() * (i + 1)
             );
 
+
         [
             shuffled[i],
             shuffled[j]
@@ -112,53 +151,20 @@ function shuffle(deck) {
 
     }
 
+
     return shuffled;
 
 }
 
 
 // ==========================================
-// STATO DELLA PARTITA
-// ==========================================
-
-const game = {
-
-    round: 1,
-
-    deck: [],
-
-    players: [],
-
-    market: {
-
-        left: [],
-
-        right: []
-
-    },
-
-    phase: "bidding",
-
-    currentPlayerId: null,
-
-    removedCurrency: null,
-
-    gameOver: false,
-
-    finalRound: false,
-
-    resolutionQueue: []
-
-};
-
-
-// ==========================================
-// CREAZIONE GIOCATORI
+// GIOCATORI
 // ==========================================
 
 function createPlayers() {
 
     const players = [];
+
 
     for (
         let i = 0;
@@ -175,11 +181,8 @@ function createPlayers() {
                     ? "Tu"
                     : `Bot ${i}`,
 
-            // Carte effettivamente possedute
-            // dal giocatore.
             hand: [],
 
-            // Carte attualmente offerte.
             bid: [],
 
             bidValue: 0,
@@ -195,6 +198,7 @@ function createPlayers() {
         });
 
     }
+
 
     return players;
 
@@ -215,7 +219,94 @@ function drawCard() {
 
     }
 
+
     return game.deck.pop();
+
+}
+
+
+// ==========================================
+// LOG
+// ==========================================
+
+function addLog(
+    text
+) {
+
+    game.logs.push({
+
+        round:
+            game.round,
+
+        text:
+            text
+
+    });
+
+
+    renderLogs();
+
+}
+
+
+// ==========================================
+// TESTO CARTA
+// ==========================================
+
+function cardDescription(
+    card
+) {
+
+    if (!card) {
+
+        return "";
+
+    }
+
+
+    if (
+        card.type === "coin"
+    ) {
+
+        return "moneta da 10";
+
+    }
+
+
+    if (
+        card.type === "play-money"
+    ) {
+
+        return "Play Money";
+
+    }
+
+
+    return `${card.currency} ${card.value} (#${card.id})`;
+
+}
+
+
+function cardsDescription(
+    cards
+) {
+
+    if (
+        !cards ||
+        cards.length === 0
+    ) {
+
+        return "nessuna carta";
+
+    }
+
+
+    return cards
+        .map(
+            card =>
+                cardDescription(card)
+        )
+        .join(", ");
 
 }
 
@@ -238,9 +329,11 @@ function setupGame() {
 
     game.resolutionQueue = [];
 
+    game.logs = [];
+
 
     // --------------------------------------
-    // CREAZIONE E MESCOLAMENTO DEL MAZZO
+    // MAZZO
     // --------------------------------------
 
     let fullDeck =
@@ -293,6 +386,7 @@ function setupGame() {
             const card =
                 drawCard();
 
+
             if (card) {
 
                 player.hand.push(
@@ -304,8 +398,6 @@ function setupGame() {
         }
 
 
-        // Play Money:
-        // non fa parte del mazzo.
         player.hand.push({
 
             id:
@@ -326,8 +418,8 @@ function setupGame() {
 
 
     // --------------------------------------
-    // MERCATO INIZIALE
-    // Prima destra, poi sinistra.
+    // MERCATO
+    // Prima B, poi A.
     // --------------------------------------
 
     game.market.right = [];
@@ -339,6 +431,7 @@ function setupGame() {
 
         const card =
             drawCard();
+
 
         if (card) {
 
@@ -356,6 +449,7 @@ function setupGame() {
         const card =
             drawCard();
 
+
         if (card) {
 
             game.market.left.push(
@@ -366,6 +460,19 @@ function setupGame() {
 
     }
 
+
+    addLog(
+        `Nuova partita. È stata rimossa la valuta ${game.removedCurrency}.`
+    );
+
+
+    addLog(
+        `Mazzo iniziale: ${game.deck.length} carte disponibili.`
+    );
+
+
+    updateTable();
+
 }
 
 
@@ -373,7 +480,9 @@ function setupGame() {
 // UTILITÀ
 // ==========================================
 
-function getPlayerById(id) {
+function getPlayerById(
+    id
+) {
 
     return game.players.find(
         player =>
@@ -383,7 +492,9 @@ function getPlayerById(id) {
 }
 
 
-function calculateBidValue(cards) {
+function calculateBidValue(
+    cards
+) {
 
     return cards.reduce(
         (total, card) =>
@@ -394,7 +505,9 @@ function calculateBidValue(cards) {
 }
 
 
-function getLowestSerial(cards) {
+function getLowestSerial(
+    cards
+) {
 
     const serials =
         cards
@@ -408,7 +521,9 @@ function getLowestSerial(cards) {
             );
 
 
-    if (serials.length === 0) {
+    if (
+        serials.length === 0
+    ) {
 
         return Infinity;
 
@@ -423,7 +538,7 @@ function getLowestSerial(cards) {
 
 
 // ==========================================
-// INFORMAZIONI SUL PATRIMONIO
+// CARTE DI UNA VALUTA
 // ==========================================
 
 function getCurrencyCards(
@@ -474,21 +589,280 @@ function countValueCards(
 }
 
 
-function hasCompleteCurrency(
+// ==========================================
+// COPIA MANO
+// ==========================================
+
+function simulateHandAfterTaking(
     player,
-    currency
+    cardsToTake,
+    cardsToLose = []
 ) {
 
-    return getCurrencyCards(
-        player,
-        currency
-    ).length === 9;
+    let hand =
+        [...player.hand];
+
+
+    const lostIds =
+        cardsToLose.map(
+            card =>
+                card.id
+        );
+
+
+    hand =
+        hand.filter(
+            card =>
+                !lostIds.includes(
+                    card.id
+                )
+        );
+
+
+    hand.push(
+        ...cardsToTake
+    );
+
+
+    return hand;
 
 }
 
 
 // ==========================================
-// VALORE STRATEGICO DI UNA CARTA
+// VALUTAZIONE OBIETTIVI DEL BOT
+// ==========================================
+
+function evaluateObjectiveScore(
+    cards
+) {
+
+    let score = 0;
+
+
+    // --------------------------------------
+    // RAGGRUPPA LE CARTE PER VALUTA
+    // --------------------------------------
+
+    for (const currency of CURRENCIES) {
+
+        const currencyCards =
+            cards.filter(
+                card =>
+                    card.type === "money" &&
+                    card.currency === currency
+            );
+
+
+        if (
+            currencyCards.length === 0
+        ) {
+
+            continue;
+
+        }
+
+
+        const value =
+            currencyCards.reduce(
+                (total, card) =>
+                    total + card.value,
+                0
+            );
+
+
+        const twenties =
+            currencyCards.filter(
+                card =>
+                    card.value === 20
+            ).length;
+
+
+        const thirties =
+            currencyCards.filter(
+                card =>
+                    card.value === 30
+            ).length;
+
+
+        // ----------------------------------
+        // TRIS DI 20
+        // ----------------------------------
+
+        if (
+            twenties >= 3
+        ) {
+
+            score += 500;
+
+        } else if (
+            twenties === 2
+        ) {
+
+            score += 190;
+
+        } else if (
+            twenties === 1
+        ) {
+
+            score += 35;
+
+        }
+
+
+        // ----------------------------------
+        // TRIS DI 30
+        // ----------------------------------
+
+        if (
+            thirties >= 3
+        ) {
+
+            score += 500;
+
+        } else if (
+            thirties === 2
+        ) {
+
+            score += 220;
+
+        } else if (
+            thirties === 1
+        ) {
+
+            score += 45;
+
+        }
+
+
+        // ----------------------------------
+        // OBIETTIVO 200
+        // ----------------------------------
+
+        if (
+            value >= 200
+        ) {
+
+            score += 650;
+
+        } else {
+
+            // Più ci si avvicina a 200,
+            // più il valore aumenta rapidamente.
+
+            if (
+                value >= 180
+            ) {
+
+                score += 420;
+
+            } else if (
+                value >= 160
+            ) {
+
+                score += 300;
+
+            } else if (
+                value >= 140
+            ) {
+
+                score += 190;
+
+            } else if (
+                value >= 120
+            ) {
+
+                score += 110;
+
+            } else if (
+                value >= 100
+            ) {
+
+                score += 55;
+
+            } else {
+
+                score +=
+                    value * 0.20;
+
+            }
+
+        }
+
+
+        // ----------------------------------
+        // SOGLIA 200: BONUS MARGINALE
+        // ----------------------------------
+
+        if (
+            value < 200
+        ) {
+
+            const missing =
+                200 - value;
+
+
+            if (
+                missing <= 20
+            ) {
+
+                score += 280;
+
+            } else if (
+                missing <= 30
+            ) {
+
+                score += 180;
+
+            } else if (
+                missing <= 40
+            ) {
+
+                score += 110;
+
+            } else if (
+                missing <= 60
+            ) {
+
+                score += 60;
+
+            }
+
+        }
+
+
+        // ----------------------------------
+        // RACCOLTA DELLA VALUTA
+        // ----------------------------------
+
+        score +=
+            currencyCards.length * 12;
+
+    }
+
+
+    // --------------------------------------
+    // MONETE
+    // --------------------------------------
+
+    const coins =
+        cards.filter(
+            card =>
+                card.type === "coin"
+        ).length;
+
+
+    score +=
+        coins * 12;
+
+
+    return score;
+
+}
+
+
+// ==========================================
+// VALORE STRATEGICO DELLA CARTA
 // ==========================================
 
 function cardStrategicValue(
@@ -509,102 +883,38 @@ function cardStrategicValue(
         card.type === "coin"
     ) {
 
-        return 10;
-
-    }
-
-
-    const cards =
-        getCurrencyCards(
-            player,
-            card.currency
-        );
-
-
-    const currentValue =
-        cards.reduce(
-            (total, c) =>
-                total + c.value,
-            0
-        );
-
-
-    const currentCount =
-        cards.length;
-
-
-    let value =
-        card.value;
-
-
-    // Più carte della stessa valuta
-    // possiede già il giocatore,
-    // più questa carta è interessante.
-
-    value +=
-        currentCount * 10;
-
-
-    // Superamento della soglia di 200.
-
-    if (
-        currentValue < 200 &&
-        currentValue + card.value >= 200
-    ) {
-
-        value += 80;
+        return 12;
 
     }
 
 
     // --------------------------------------
-    // TRIS DI 20
+    // VALUTAZIONE MARGINALE
     // --------------------------------------
 
-    const twenties =
-        countValueCards(
-            player,
-            card.currency,
-            20
+    const before =
+        evaluateObjectiveScore(
+            player.hand
         );
 
 
-    if (
-        card.value === 20 &&
-        twenties === 2
-    ) {
-
-        value += 90;
-
-    }
-
-
-    // --------------------------------------
-    // TRIS DI 30
-    // --------------------------------------
-
-    const thirties =
-        countValueCards(
-            player,
-            card.currency,
-            30
+    const after =
+        evaluateObjectiveScore(
+            [
+                ...player.hand,
+                card
+            ]
         );
 
 
-    if (
-        card.value === 30 &&
-        thirties === 2
-    ) {
-
-        value += 90;
-
-    }
+    const marginal =
+        after - before;
 
 
-    // Nessun bonus aggiuntivo per la
-    // nona carta della valuta.
-
-    return value;
+    return (
+        card.value * 0.15 +
+        marginal
+    );
 
 }
 
@@ -628,27 +938,31 @@ function evaluateLot(
     }
 
 
-    let value = 0;
+    const before =
+        evaluateObjectiveScore(
+            player.hand
+        );
 
 
-    for (const card of lot) {
-
-        value +=
-            cardStrategicValue(
-                player,
-                card
-            );
-
-    }
+    const after =
+        evaluateObjectiveScore(
+            [
+                ...player.hand,
+                ...lot
+            ]
+        );
 
 
-    return value;
+    return (
+        after -
+        before
+    );
 
 }
 
 
 // ==========================================
-// VALORE DELL'OFFERTA AVVERSARIA
+// VALORE DI UN'OFFERTA AVVERSARIA
 // ==========================================
 
 function evaluateOpponentBid(
@@ -666,27 +980,16 @@ function evaluateOpponentBid(
     }
 
 
-    let value = 0;
-
-
-    for (const card of opponent.bid) {
-
-        value +=
-            cardStrategicValue(
-                player,
-                card
-            );
-
-    }
-
-
-    return value;
+    return evaluateLot(
+        player,
+        opponent.bid
+    );
 
 }
 
 
 // ==========================================
-// COSTO STRATEGICO DELL'OFFERTA
+// COSTO DI UNA PROPRIA OFFERTA
 // ==========================================
 
 function evaluateBidCost(
@@ -694,21 +997,258 @@ function evaluateBidCost(
     bid
 ) {
 
-    let cost = 0;
+    if (
+        bid.length === 0
+    ) {
 
-
-    for (const card of bid) {
-
-        cost +=
-            cardStrategicValue(
-                player,
-                card
-            );
+        return 0;
 
     }
 
 
-    return cost;
+    const before =
+        evaluateObjectiveScore(
+            player.hand
+        );
+
+
+    const remaining =
+        player.hand.filter(
+            card =>
+                !bid.some(
+                    offered =>
+                        offered.id === card.id
+                )
+        );
+
+
+    const after =
+        evaluateObjectiveScore(
+            remaining
+        );
+
+
+    // Quanto il giocatore perde
+    // privandosi delle carte offerte.
+
+    return Math.max(
+        0,
+        before - after
+    );
+
+}
+
+
+// ==========================================
+// VALORE DI UNA CARTA SACRIFICATA
+// ==========================================
+
+function evaluateSacrifice(
+    player,
+    card
+) {
+
+    return cardStrategicValue(
+        player,
+        card
+    );
+
+}
+
+
+// ==========================================
+// VALUTAZIONE DI UN'ACQUISIZIONE
+// ==========================================
+
+function evaluateAcquisition(
+    player,
+    lot,
+    bid
+) {
+
+    if (
+        !lot ||
+        lot.length === 0
+    ) {
+
+        return -Infinity;
+
+    }
+
+
+    const remainingHand =
+        player.hand.filter(
+            card =>
+                !bid.some(
+                    offered =>
+                        offered.id === card.id
+                )
+        );
+
+
+    const before =
+        evaluateObjectiveScore(
+            player.hand
+        );
+
+
+    const after =
+        evaluateObjectiveScore(
+            [
+                ...remainingHand,
+                ...lot
+            ]
+        );
+
+
+    let value =
+        after - before;
+
+
+    // --------------------------------------
+    // PREMIO ESPLICITO PER OBIETTIVI
+    // --------------------------------------
+
+    const simulated =
+        [
+            ...remainingHand,
+            ...lot
+        ];
+
+
+    for (const currency of CURRENCIES) {
+
+        const cards =
+            simulated.filter(
+                card =>
+                    card.type === "money" &&
+                    card.currency === currency
+            );
+
+
+        const current =
+            cards.reduce(
+                (total, card) =>
+                    total + card.value,
+                0
+            );
+
+
+        const twenties =
+            cards.filter(
+                card =>
+                    card.value === 20
+            ).length;
+
+
+        const thirties =
+            cards.filter(
+                card =>
+                    card.value === 30
+            ).length;
+
+
+        // Arrivo esattamente o oltre 200.
+
+        if (
+            current >= 200
+        ) {
+
+            const previous =
+                player.hand
+                    .filter(
+                        card =>
+                            card.type === "money" &&
+                            card.currency === currency
+                    )
+                    .reduce(
+                        (total, card) =>
+                            total + card.value,
+                        0
+                    );
+
+
+            if (
+                previous < 200
+            ) {
+
+                value += 350;
+
+            }
+
+        }
+
+
+        // Completa tris di 20.
+
+        if (
+            twenties >= 3
+        ) {
+
+            const previous =
+                player.hand.filter(
+                    card =>
+                        card.type === "money" &&
+                        card.currency === currency &&
+                        card.value === 20
+                ).length;
+
+
+            if (
+                previous < 3
+            ) {
+
+                value += 350;
+
+            }
+
+        }
+
+
+        // Completa tris di 30.
+
+        if (
+            thirties >= 3
+        ) {
+
+            const previous =
+                player.hand.filter(
+                    card =>
+                        card.type === "money" &&
+                        card.currency === currency &&
+                        card.value === 30
+                ).length;
+
+
+            if (
+                previous < 3
+            ) {
+
+                value += 400;
+
+            }
+
+        }
+
+    }
+
+
+    // --------------------------------------
+    // PENALITÀ PER OFFERTE MOLTO COSTOSE
+    // --------------------------------------
+
+    const sacrificeCost =
+        evaluateBidCost(
+            player,
+            bid
+        );
+
+
+    value -=
+        sacrificeCost * 0.55;
+
+
+    return value;
 
 }
 
@@ -735,9 +1275,6 @@ function generateBidCandidates(
     const total =
         cards.length;
 
-
-    // Con 6 carte al massimo:
-    // 2^6 - 1 = 63 combinazioni.
 
     for (
         let mask = 1;
@@ -775,7 +1312,7 @@ function generateBidCandidates(
     }
 
 
-    // Play Money = nessuna offerta reale.
+    // Pass.
 
     const playMoney =
         player.hand.find(
@@ -800,6 +1337,118 @@ function generateBidCandidates(
 
 
 // ==========================================
+// BOT: OBIETTIVI PRIORITARI
+// ==========================================
+
+function getBotTargets(
+    player
+) {
+
+    const targets = [];
+
+
+    for (const currency of CURRENCIES) {
+
+        const cards =
+            getCurrencyCards(
+                player,
+                currency
+            );
+
+
+        const value =
+            cards.reduce(
+                (total, card) =>
+                    total + card.value,
+                0
+            );
+
+
+        const twenties =
+            cards.filter(
+                card =>
+                    card.value === 20
+            ).length;
+
+
+        const thirties =
+            cards.filter(
+                card =>
+                    card.value === 30
+            ).length;
+
+
+        if (
+            twenties === 2
+        ) {
+
+            targets.push({
+
+                type: "triple20",
+
+                currency:
+                    currency,
+
+                priority:
+                    1000
+
+            });
+
+        }
+
+
+        if (
+            thirties === 2
+        ) {
+
+            targets.push({
+
+                type: "triple30",
+
+                currency:
+                    currency,
+
+                priority:
+                    1050
+
+            });
+
+        }
+
+
+        if (
+            value >= 160 &&
+            value < 200
+        ) {
+
+            targets.push({
+
+                type: "reach200",
+
+                currency:
+                    currency,
+
+                priority:
+                    900 +
+                    (value - 160) * 3
+
+            });
+
+        }
+
+    }
+
+
+    return targets.sort(
+        (a, b) =>
+            b.priority -
+            a.priority
+    );
+
+}
+
+
+// ==========================================
 // BOT: SCELTA OFFERTA
 // ==========================================
 
@@ -813,24 +1462,9 @@ function chooseBotBid(
         );
 
 
-    const leftValue =
-        evaluateLot(
-            player,
-            game.market.left
-        );
-
-
-    const rightValue =
-        evaluateLot(
-            player,
-            game.market.right
-        );
-
-
-    const marketValue =
-        Math.max(
-            leftValue,
-            rightValue
+    const targets =
+        getBotTargets(
+            player
         );
 
 
@@ -841,43 +1475,10 @@ function chooseBotBid(
         -Infinity;
 
 
-    let strongestOpponentBid = 0;
-
-
-    for (const opponent of game.players) {
-
-        if (
-            opponent.id === player.id
-        ) {
-
-            continue;
-
-        }
-
-
-        if (
-            opponent.bidValue >
-            strongestOpponentBid
-        ) {
-
-            strongestOpponentBid =
-                opponent.bidValue;
-
-        }
-
-    }
-
-
     for (const bid of candidates) {
 
-        const bidValue =
-            calculateBidValue(
-                bid
-            );
-
-
         // ----------------------------------
-        // PLAY MONEY
+        // PASS
         // ----------------------------------
 
         if (
@@ -885,33 +1486,36 @@ function chooseBotBid(
             bid[0].type === "play-money"
         ) {
 
-            let passScore = 0;
+            let score = 0;
 
 
-            passScore +=
-                marketValue * 0.18;
+            // Se il bot è già vicino
+            // ai suoi obiettivi, preferisce
+            // conservare le proprie carte.
+
+            score += 35;
 
 
             if (
-                marketValue < 55
+                targets.length > 0
             ) {
 
-                passScore += 15;
+                score += 60;
 
             }
 
 
-            passScore +=
+            score +=
                 Math.random() * 3;
 
 
             if (
-                passScore >
+                score >
                 bestScore
             ) {
 
                 bestScore =
-                    passScore;
+                    score;
 
                 bestBid =
                     bid;
@@ -924,35 +1528,172 @@ function chooseBotBid(
         }
 
 
-        let score = 0;
+        const bidValue =
+            calculateBidValue(
+                bid
+            );
 
 
-        // Valore del mercato.
+        // ----------------------------------
+        // COSTO DELLA PROPRIA OFFERTA
+        // ----------------------------------
 
-        score +=
-            marketValue * 0.75;
-
-
-        // Costo delle carte sacrificate.
-
-        const bidCost =
+        const sacrificeCost =
             evaluateBidCost(
                 player,
                 bid
             );
 
 
+        // ----------------------------------
+        // MIGLIOR LOTTO CHE POTREBBE
+        // OTTENERE
+        // ----------------------------------
+
+        const leftGain =
+            evaluateAcquisition(
+                player,
+                game.market.left,
+                bid
+            );
+
+
+        const rightGain =
+            evaluateAcquisition(
+                player,
+                game.market.right,
+                bid
+            );
+
+
+        const bestMarketGain =
+            Math.max(
+                leftGain,
+                rightGain
+            );
+
+
+        let score =
+            bestMarketGain;
+
+
+        // ----------------------------------
+        // VALORE DELLA PRIORITÀ
+        // ----------------------------------
+
+        if (
+            targets.length > 0
+        ) {
+
+            const target =
+                targets[0];
+
+
+            if (
+                target.type === "triple20"
+            ) {
+
+                for (const card of bid) {
+
+                    if (
+                        card.type === "money" &&
+                        card.currency ===
+                            target.currency &&
+                        card.value === 20
+                    ) {
+
+                        score -= 140;
+
+                    }
+
+                }
+
+            }
+
+
+            if (
+                target.type === "triple30"
+            ) {
+
+                for (const card of bid) {
+
+                    if (
+                        card.type === "money" &&
+                        card.currency ===
+                            target.currency &&
+                        card.value === 30
+                    ) {
+
+                        score -= 160;
+
+                    }
+
+                }
+
+            }
+
+
+            if (
+                target.type === "reach200"
+            ) {
+
+                const targetCards =
+                    getCurrencyCards(
+                        player,
+                        target.currency
+                    );
+
+
+                const targetValue =
+                    targetCards.reduce(
+                        (total, card) =>
+                            total + card.value,
+                        0
+                    );
+
+
+                if (
+                    targetValue >= 160
+                ) {
+
+                    for (const card of bid) {
+
+                        if (
+                            card.type === "money" &&
+                            card.currency ===
+                                target.currency
+                        ) {
+
+                            score -= 100;
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+
+
+        // ----------------------------------
+        // COSTO GENERALE
+        // ----------------------------------
+
         score -=
-            bidCost * 0.38;
+            sacrificeCost * 0.45;
 
 
-        // Offerte brevi preferite.
+        // ----------------------------------
+        // INCENTIVO A OFFERTE COMPATTE
+        // ----------------------------------
 
         if (
             bid.length === 1
         ) {
 
-            score += 14;
+            score += 22;
 
         }
 
@@ -961,73 +1702,60 @@ function chooseBotBid(
             bid.length === 2
         ) {
 
-            score += 10;
+            score += 12;
 
         }
 
-
-        // Offerte molto grandi
-        // diventano progressivamente costose.
 
         if (
             bid.length >= 4
         ) {
 
             score -=
-                (bid.length - 3) * 22;
+                (bid.length - 3) * 30;
 
         }
 
 
-        // Essere sufficientemente forti
-        // per ottenere il primo turno.
-
-        if (
-            bidValue >= marketValue
-        ) {
-
-            score += 15;
-
-        }
-
-
-        if (
-            bidValue >= strongestOpponentBid
-        ) {
-
-            score += 12;
-
-        }
-
-
-        // Fascia di offerta efficiente.
+        // ----------------------------------
+        // VALORE DELL'OFFERTA COME
+        // STRUMENTO PER AVERE PRIORITÀ
+        // ----------------------------------
 
         if (
             bidValue >= 50 &&
             bidValue <= 100
         ) {
 
-            score += 8;
+            score += 18;
 
         }
 
-
-        // Offerte eccessive.
 
         if (
-            bidValue >= 160
+            bidValue >= 120
         ) {
 
-            score -= 20;
+            score -= 10;
 
         }
 
 
-        // Piccola variabilità per evitare
-        // comportamenti sempre identici.
+        if (
+            bidValue >= 180
+        ) {
+
+            score -= 30;
+
+        }
+
+
+        // ----------------------------------
+        // PICCOLA VARIABILITÀ
+        // ----------------------------------
 
         score +=
-            Math.random() * 3;
+            Math.random() * 5;
 
 
         if (
@@ -1082,7 +1810,7 @@ function compareBids(
 
 
 // ==========================================
-// ORDINE DELLE OFFERTE
+// ORDINE OFFERTE
 // ==========================================
 
 function determineBidOrder() {
@@ -1095,70 +1823,6 @@ function determineBidOrder() {
         .sort(
             compareBids
         );
-
-}
-
-
-// ==========================================
-// RIVELAZIONE OFFERTE
-// ==========================================
-
-function revealBids() {
-
-    for (const player of game.players) {
-
-        const selectedIds =
-            player.selectedCards;
-
-
-        const selectedCards =
-            player.hand.filter(
-                card =>
-                    selectedIds.includes(
-                        card.id
-                    )
-            );
-
-
-        const realBid =
-            selectedCards.filter(
-                card =>
-                    card.type !==
-                    "play-money"
-            );
-
-
-        // Le carte dell'offerta vengono
-        // tolte dalla mano e messe nell'area
-        // bid del giocatore.
-
-        player.bid =
-            realBid;
-
-
-        player.bidValue =
-            calculateBidValue(
-                realBid
-            );
-
-
-        player.hand =
-            player.hand.filter(
-                card =>
-                    !selectedIds.includes(
-                        card.id
-                    )
-            );
-
-
-        player.bidConfirmed =
-            true;
-
-
-        player.resolved =
-            realBid.length === 0;
-
-    }
 
 }
 
@@ -1216,40 +1880,6 @@ function getNextPlayer() {
 
 
 // ==========================================
-// BOT: RISOLUZIONE TURNO
-// ==========================================
-
-function resolveBotTurn(
-    player
-) {
-
-    if (
-        player.resolved ||
-        player.bid.length === 0
-    ) {
-
-        continueResolution();
-
-        return;
-
-    }
-
-
-    const action =
-        chooseBotAction(
-            player
-        );
-
-
-    executeAction(
-        player,
-        action
-    );
-
-}
-
-
-// ==========================================
 // BOT: SCELTA AZIONE
 // ==========================================
 
@@ -1261,7 +1891,7 @@ function chooseBotAction(
 
 
     // --------------------------------------
-    // PRENDI OFFERTA A
+    // OFFERTA A
     // --------------------------------------
 
     if (
@@ -1273,9 +1903,10 @@ function chooseBotAction(
             type: "left",
 
             targetValue:
-                evaluateLot(
+                evaluateAcquisition(
                     player,
-                    game.market.left
+                    game.market.left,
+                    player.bid
                 )
 
         });
@@ -1284,7 +1915,7 @@ function chooseBotAction(
 
 
     // --------------------------------------
-    // PRENDI OFFERTA B
+    // OFFERTA B
     // --------------------------------------
 
     if (
@@ -1296,9 +1927,10 @@ function chooseBotAction(
             type: "right",
 
             targetValue:
-                evaluateLot(
+                evaluateAcquisition(
                     player,
-                    game.market.right
+                    game.market.right,
+                    player.bid
                 )
 
         });
@@ -1307,7 +1939,7 @@ function chooseBotAction(
 
 
     // --------------------------------------
-    // PRENDI OFFERTA AVVERSARIA
+    // OFFERTE AVVERSARIE
     // --------------------------------------
 
     for (const opponent of game.players) {
@@ -1346,8 +1978,9 @@ function chooseBotAction(
             );
 
 
-        let disruption = 0;
-
+        // ----------------------------------
+        // DISTURBO
+        // ----------------------------------
 
         for (const card of opponent.bid) {
 
@@ -1368,18 +2001,23 @@ function chooseBotAction(
 
 
             if (
-                opponentCards.length >= 5
+                opponentCards.length >= 4
             ) {
 
-                disruption += 25;
+                targetValue += 50;
+
+            }
+
+
+            if (
+                opponentCards.length >= 6
+            ) {
+
+                targetValue += 80;
 
             }
 
         }
-
-
-        targetValue +=
-            disruption;
 
 
         actions.push({
@@ -1398,7 +2036,7 @@ function chooseBotAction(
 
 
     // --------------------------------------
-    // NESSUNO SCAMBIO
+    // PASS
     // --------------------------------------
 
     actions.push({
@@ -1428,10 +2066,13 @@ function chooseBotAction(
         );
 
 
+    // Se nessun obiettivo vale davvero
+    // il sacrificio, recupera le carte.
+
     if (
         best.type !== "pass" &&
         best.targetValue <
-        bidCost * 0.45
+            bidCost * 0.40
     ) {
 
         return {
@@ -1444,6 +2085,40 @@ function chooseBotAction(
 
 
     return best;
+
+}
+
+
+// ==========================================
+// RISOLUZIONE TURNO BOT
+// ==========================================
+
+function resolveBotTurn(
+    player
+) {
+
+    if (
+        player.resolved ||
+        player.bid.length === 0
+    ) {
+
+        continueResolution();
+
+        return;
+
+    }
+
+
+    const action =
+        chooseBotAction(
+            player
+        );
+
+
+    executeAction(
+        player,
+        action
+    );
 
 }
 
@@ -1468,17 +2143,19 @@ function executeAction(
 
 
     // --------------------------------------
-    // NESSUNO SCAMBIO
+    // PASS
     // --------------------------------------
 
     if (
         action.type === "pass"
     ) {
 
-        // L'offerta torna nella mano.
+        const offeredCards =
+            [...player.bid];
+
 
         player.hand.push(
-            ...player.bid
+            ...offeredCards
         );
 
 
@@ -1487,6 +2164,11 @@ function executeAction(
         player.bidValue = 0;
 
         player.resolved = true;
+
+
+        addLog(
+            `${player.name} non effettua scambi e riprende la propria offerta (${cardsDescription(offeredCards)}).`
+        );
 
 
         updateTable();
@@ -1499,7 +2181,7 @@ function executeAction(
 
 
     // --------------------------------------
-    // PRENDI OFFERTA A
+    // PRENDI A
     // --------------------------------------
 
     if (
@@ -1510,14 +2192,13 @@ function executeAction(
             [...game.market.left];
 
 
-        // La propria offerta sostituisce
-        // il lotto sul tavolo.
-
-        game.market.left =
+        const offeredCards =
             [...player.bid];
 
 
-        // Il giocatore prende il lotto.
+        game.market.left =
+            offeredCards;
+
 
         player.hand.push(
             ...lot
@@ -1529,6 +2210,11 @@ function executeAction(
         player.bidValue = 0;
 
         player.resolved = true;
+
+
+        addLog(
+            `${player.name} prende l'offerta A (${cardsDescription(lot)}) e vi sostituisce la propria offerta (${cardsDescription(offeredCards)}).`
+        );
 
 
         updateTable();
@@ -1541,7 +2227,7 @@ function executeAction(
 
 
     // --------------------------------------
-    // PRENDI OFFERTA B
+    // PRENDI B
     // --------------------------------------
 
     if (
@@ -1552,8 +2238,12 @@ function executeAction(
             [...game.market.right];
 
 
-        game.market.right =
+        const offeredCards =
             [...player.bid];
+
+
+        game.market.right =
+            offeredCards;
 
 
         player.hand.push(
@@ -1566,6 +2256,11 @@ function executeAction(
         player.bidValue = 0;
 
         player.resolved = true;
+
+
+        addLog(
+            `${player.name} prende l'offerta B (${cardsDescription(lot)}) e vi sostituisce la propria offerta (${cardsDescription(offeredCards)}).`
+        );
 
 
         updateTable();
@@ -1609,27 +2304,27 @@ function executeAction(
         }
 
 
-        // ----------------------------------
-        // Il giocatore prende l'offerta
-        // dell'avversario.
-        // ----------------------------------
-
         const targetBid =
             [...target.bid];
 
+
+        const playerBid =
+            [...player.bid];
+
+
+        // Il giocatore prende l'offerta
+        // dell'avversario.
 
         player.hand.push(
             ...targetBid
         );
 
 
-        // ----------------------------------
-        // La propria offerta passa al
-        // giocatore bersaglio.
-        // ----------------------------------
+        // La propria offerta passa
+        // all'avversario.
 
         target.bid =
-            [...player.bid];
+            playerBid;
 
 
         target.bidValue =
@@ -1642,10 +2337,6 @@ function executeAction(
             false;
 
 
-        // ----------------------------------
-        // L'attaccante ha terminato.
-        // ----------------------------------
-
         player.bid = [];
 
         player.bidValue = 0;
@@ -1653,12 +2344,13 @@ function executeAction(
         player.resolved = true;
 
 
-        // ----------------------------------
-        // Il bersaglio diventa attivo.
-        // ----------------------------------
-
         game.currentPlayerId =
             target.id;
+
+
+        addLog(
+            `${player.name} prende l'offerta di ${target.name} (${cardsDescription(targetBid)}). ${target.name} riceve la nuova offerta (${cardsDescription(playerBid)}) e deve giocarla.`
+        );
 
 
         updateTable();
@@ -1687,10 +2379,11 @@ function executeAction(
                     );
 
                 },
-                550
+                700
             );
 
         }
+
 
         return;
 
@@ -1748,7 +2441,7 @@ function continueResolution() {
                 );
 
             },
-            600
+            650
         );
 
     }
@@ -1757,7 +2450,7 @@ function continueResolution() {
 
 
 // ==========================================
-// AZIONI DEL GIOCATORE
+// AZIONI DEL GIOCATORE UMANO
 // ==========================================
 
 function showPlayerActions(
@@ -1956,130 +2649,6 @@ function createActionButton(
 
 
 // ==========================================
-// FINE MANO
-// ==========================================
-
-function finishRound() {
-
-    game.phase =
-        "round-end";
-
-
-    game.currentPlayerId =
-        null;
-
-
-    // --------------------------------------
-    // RESET DELLE OFFERTE
-    // --------------------------------------
-
-    for (const player of game.players) {
-
-        player.bid = [];
-
-        player.bidValue = 0;
-
-        player.selectedCards = [];
-
-        player.bidConfirmed = false;
-
-        player.resolved = false;
-
-    }
-
-
-    // --------------------------------------
-    // RIFORNIMENTO
-    // PRIMA B, POI A
-    // --------------------------------------
-
-    replenishMarket(
-        "right"
-    );
-
-    replenishMarket(
-        "left"
-    );
-
-
-    // --------------------------------------
-    // FINE MAZZO
-    // --------------------------------------
-
-    if (
-        game.deck.length === 0
-    ) {
-
-        game.finalRound = true;
-
-        finishGame();
-
-        return;
-
-    }
-
-
-    // --------------------------------------
-    // NUOVA MANO
-    // --------------------------------------
-
-    game.round++;
-
-    game.phase =
-        "bidding";
-
-
-    updateTable();
-
-
-    setMessage(
-        `Manche ${game.round}: scegli le carte da offrire.`
-    );
-
-
-    showBidButton();
-
-}
-
-
-// ==========================================
-// RIFORNIMENTO MERCATO
-// ==========================================
-
-function replenishMarket(
-    side
-) {
-
-    const market =
-        game.market[side];
-
-
-    while (
-        market.length < 4 &&
-        game.deck.length > 0
-    ) {
-
-        const card =
-            drawCard();
-
-
-        if (!card) {
-
-            break;
-
-        }
-
-
-        market.push(
-            card
-        );
-
-    }
-
-}
-
-
-// ==========================================
 // CONFERMA OFFERTA
 // ==========================================
 
@@ -2098,11 +2667,6 @@ function confirmBid() {
         game.players[0];
 
 
-    // --------------------------------------
-    // DEVE ESSERE SELEZIONATA ALMENO
-    // UNA CARTA
-    // --------------------------------------
-
     if (
         player.selectedCards.length === 0
     ) {
@@ -2117,7 +2681,7 @@ function confirmBid() {
 
 
     // --------------------------------------
-    // PRENDI LE CARTE SELEZIONATE
+    // OFFERTA UMANA
     // --------------------------------------
 
     const selectedIds =
@@ -2133,10 +2697,6 @@ function confirmBid() {
         );
 
 
-    // --------------------------------------
-    // PLAY MONEY NON È UNA VERA OFFERTA
-    // --------------------------------------
-
     const realBid =
         selectedCards.filter(
             card =>
@@ -2145,9 +2705,7 @@ function confirmBid() {
         );
 
 
-    // --------------------------------------
-    // LE CARTE OFFERTE ESCONO DALLA MANO
-    // --------------------------------------
+    // Le carte offerte escono dalla mano.
 
     player.hand =
         player.hand.filter(
@@ -2157,10 +2715,6 @@ function confirmBid() {
                 )
         );
 
-
-    // --------------------------------------
-    // SALVA L'OFFERTA
-    // --------------------------------------
 
     player.bid =
         realBid;
@@ -2180,8 +2734,13 @@ function confirmBid() {
         player.bid.length === 0;
 
 
+    addLog(
+        `Tu giochi un'offerta di ${player.bidValue}: ${cardsDescription(player.bid)}.`
+    );
+
+
     // --------------------------------------
-    // BOT
+    // OFFERTE BOT
     // --------------------------------------
 
     for (
@@ -2203,10 +2762,6 @@ function confirmBid() {
             );
 
 
-        // ----------------------------------
-        // PLAY MONEY = PASS
-        // ----------------------------------
-
         const realBotBid =
             chosenBid.filter(
                 card =>
@@ -2221,11 +2776,6 @@ function confirmBid() {
                     card.id
             );
 
-
-        // ----------------------------------
-        // LE CARTE OFFERTE ESCONO
-        // DALLA MANO DEL BOT
-        // ----------------------------------
 
         bot.hand =
             bot.hand.filter(
@@ -2253,11 +2803,28 @@ function confirmBid() {
         bot.resolved =
             bot.bid.length === 0;
 
+
+        if (
+            bot.bid.length > 0
+        ) {
+
+            addLog(
+                `${bot.name} gioca un'offerta di ${bot.bidValue}.`
+            );
+
+        } else {
+
+            addLog(
+                `${bot.name} passa.`
+            );
+
+        }
+
     }
 
 
     // --------------------------------------
-    // PREPARAZIONE RISOLUZIONE
+    // RISOLUZIONE
     // --------------------------------------
 
     prepareResolution();
@@ -2273,10 +2840,6 @@ function confirmBid() {
 
     updateTable();
 
-
-    // --------------------------------------
-    // PRIMO GIOCATORE
-    // --------------------------------------
 
     const first =
         getNextPlayer();
@@ -2321,7 +2884,7 @@ function confirmBid() {
                 );
 
             },
-            600
+            700
         );
 
     }
@@ -2330,7 +2893,7 @@ function confirmBid() {
 
 
 // ==========================================
-// PULSANTE CONFERMA OFFERTA
+// PULSANTE OFFERTA
 // ==========================================
 
 function showBidButton() {
@@ -2432,7 +2995,7 @@ function toggleCardSelection(
 
 
 // ==========================================
-// CREAZIONE ELEMENTO CARTA
+// ELEMENTO CARTA
 // ==========================================
 
 function createCardElement(
@@ -2511,8 +3074,10 @@ function createCardElement(
                 "div"
             );
 
+
         label.className =
             "card-currency";
+
 
         label.textContent =
             "BLUFF";
@@ -2523,8 +3088,10 @@ function createCardElement(
                 "div"
             );
 
+
         value.className =
             "card-value";
+
 
         value.textContent =
             "PLAY";
@@ -2533,6 +3100,7 @@ function createCardElement(
         element.appendChild(
             label
         );
+
 
         element.appendChild(
             value
@@ -2562,8 +3130,10 @@ function createCardElement(
                 "div"
             );
 
+
         label.className =
             "card-currency";
+
 
         label.textContent =
             "MONETA";
@@ -2574,8 +3144,10 @@ function createCardElement(
                 "div"
             );
 
+
         value.className =
             "card-value";
+
 
         value.textContent =
             "10";
@@ -2586,8 +3158,10 @@ function createCardElement(
                 "div"
             );
 
+
         serial.className =
             "card-serial";
+
 
         serial.textContent =
             `#${card.id}`;
@@ -2597,9 +3171,11 @@ function createCardElement(
             label
         );
 
+
         element.appendChild(
             value
         );
+
 
         element.appendChild(
             serial
@@ -2625,8 +3201,10 @@ function createCardElement(
             "div"
         );
 
+
     currency.className =
         "card-currency";
+
 
     currency.textContent =
         card.currency;
@@ -2637,8 +3215,10 @@ function createCardElement(
             "div"
         );
 
+
     value.className =
         "card-value";
+
 
     value.textContent =
         card.value;
@@ -2649,8 +3229,10 @@ function createCardElement(
             "div"
         );
 
+
     serial.className =
         "card-serial";
+
 
     serial.textContent =
         `#${card.id}`;
@@ -2660,9 +3242,11 @@ function createCardElement(
         currency
     );
 
+
     element.appendChild(
         value
     );
+
 
     element.appendChild(
         serial
@@ -2670,45 +3254,6 @@ function createCardElement(
 
 
     return element;
-
-}
-
-
-// ==========================================
-// RENDER DI UN'OFFERTA
-// ==========================================
-
-function renderBid(
-    container,
-    player,
-    hidden = false
-) {
-
-    container.innerHTML = "";
-
-
-    if (
-        !player ||
-        player.bid.length === 0
-    ) {
-
-        return;
-
-    }
-
-
-    for (const card of player.bid) {
-
-        container.appendChild(
-            createCardElement(
-                card,
-                {
-                    hidden: hidden
-                }
-            )
-        );
-
-    }
 
 }
 
@@ -2821,8 +3366,18 @@ function renderPlayers() {
         }
 
 
+        playerElement.appendChild(
+            name
+        );
+
+
+        playerElement.appendChild(
+            status
+        );
+
+
         // ----------------------------------
-        // CARTE IN MANO
+        // MANO
         // ----------------------------------
 
         const cards =
@@ -2848,9 +3403,8 @@ function renderPlayers() {
                 );
 
 
-            // Le carte dei bot sono sempre
-            // nascoste, non solo durante
-            // la fase di offerta.
+            // Le mani dei bot sono sempre
+            // coperte.
 
             const hidden =
                 !isHuman;
@@ -2904,8 +3458,13 @@ function renderPlayers() {
         }
 
 
+        playerElement.appendChild(
+            cards
+        );
+
+
         // ----------------------------------
-        // ETICHETTA OFFERTA
+        // OFFERTA DEL BOT / DEL GIOCATORE
         // ----------------------------------
 
         if (
@@ -2923,33 +3482,18 @@ function renderPlayers() {
                 "player-status";
 
 
+            bidLabel.style.marginTop =
+                "10px";
+
+
             bidLabel.textContent =
                 `Offerta giocata (${player.bidValue})`;
 
 
             playerElement.appendChild(
-                name
-            );
-
-            playerElement.appendChild(
-                status
-            );
-
-            playerElement.appendChild(
-                cards
-            );
-
-            playerElement.appendChild(
                 bidLabel
             );
 
-
-            // ----------------------------------
-            // OFFERTA DEL BOT
-            // ----------------------------------
-            //
-            // Mostriamo le carte scoperte.
-            // ----------------------------------
 
             const bidCards =
                 document.createElement(
@@ -2976,25 +3520,11 @@ function renderPlayers() {
                 bidCards
             );
 
-        } else {
-
-            playerElement.appendChild(
-                name
-            );
-
-            playerElement.appendChild(
-                status
-            );
-
-            playerElement.appendChild(
-                cards
-            );
-
         }
 
 
         // ----------------------------------
-        // NUMERO DI CARTE / PUNTEGGIO
+        // INFO
         // ----------------------------------
 
         const score =
@@ -3061,11 +3591,6 @@ function renderHand() {
     const player =
         game.players[0];
 
-
-    // Le carte dell'offerta non sono più
-    // nella hand, quindi qui vediamo
-    // esclusivamente le carte realmente
-    // ancora possedute.
 
     for (const card of player.hand) {
 
@@ -3168,7 +3693,7 @@ function renderMarketSide(
 
 
 // ==========================================
-// RENDER OFFERTA DEL GIOCATORE
+// RENDER OFFERTA UMANA
 // ==========================================
 
 function renderPlayerBid() {
@@ -3201,6 +3726,453 @@ function renderPlayerBid() {
             createCardElement(
                 card
             )
+        );
+
+    }
+
+}
+
+
+// ==========================================
+// RENDER MAZZO
+// ==========================================
+
+function renderDeck() {
+
+    let deckArea =
+        document.getElementById(
+            "deck-area"
+        );
+
+
+    if (!deckArea) {
+
+        const table =
+            document.getElementById(
+                "table"
+            );
+
+
+        deckArea =
+            document.createElement(
+                "div"
+            );
+
+
+        deckArea.id =
+            "deck-area";
+
+
+        deckArea.style.display =
+            "flex";
+
+
+        deckArea.style.flexDirection =
+            "column";
+
+
+        deckArea.style.alignItems =
+            "center";
+
+
+        deckArea.style.justifyContent =
+            "center";
+
+
+        deckArea.style.margin =
+            "5px auto";
+
+
+        deckArea.style.gap =
+            "7px";
+
+
+        const deckCard =
+            document.createElement(
+                "div"
+            );
+
+
+        deckCard.id =
+            "deck-card";
+
+
+        deckCard.style.width =
+            "70px";
+
+
+        deckCard.style.height =
+            "96px";
+
+
+        deckCard.style.borderRadius =
+            "8px";
+
+
+        deckCard.style.background =
+            "#777";
+
+
+        deckCard.style.border =
+            "2px solid #444";
+
+
+        deckCard.style.boxShadow =
+            "0 3px 5px rgba(0,0,0,0.35)";
+
+
+        deckCard.style.display =
+            "flex";
+
+
+        deckCard.style.flexDirection =
+            "column";
+
+
+        deckCard.style.alignItems =
+            "center";
+
+
+        deckCard.style.justifyContent =
+            "center";
+
+
+        deckCard.style.color =
+            "#eee";
+
+
+        deckCard.style.fontWeight =
+            "bold";
+
+
+        deckCard.style.userSelect =
+            "none";
+
+
+        const deckIcon =
+            document.createElement(
+                "div"
+            );
+
+
+        deckIcon.textContent =
+            "CARTE";
+
+
+        deckIcon.style.fontSize =
+            "13px";
+
+
+        const deckCount =
+            document.createElement(
+                "div"
+            );
+
+
+        deckCount.id =
+            "deck-count";
+
+
+        deckCount.style.fontSize =
+            "24px";
+
+
+        deckCount.style.marginTop =
+            "5px";
+
+
+        deckCard.appendChild(
+            deckIcon
+        );
+
+
+        deckCard.appendChild(
+            deckCount
+        );
+
+
+        const deckLabel =
+            document.createElement(
+                "div"
+            );
+
+
+        deckLabel.id =
+            "deck-label";
+
+
+        deckLabel.style.fontSize =
+            "13px";
+
+
+        deckLabel.style.color =
+            "#ddd";
+
+
+        deckLabel.textContent =
+            "carte da pescare";
+
+
+        deckArea.appendChild(
+            deckCard
+        );
+
+
+        deckArea.appendChild(
+            deckLabel
+        );
+
+
+        const center =
+            document.querySelector(
+                ".center"
+            );
+
+
+        if (center) {
+
+            center.appendChild(
+                deckArea
+            );
+
+        } else {
+
+            table.appendChild(
+                deckArea
+            );
+
+        }
+
+    }
+
+
+    const count =
+        document.getElementById(
+            "deck-count"
+        );
+
+
+    if (count) {
+
+        count.textContent =
+            game.deck.length;
+
+    }
+
+}
+
+
+// ==========================================
+// RENDER LOG
+// ==========================================
+
+function renderLogs() {
+
+    let logArea =
+        document.getElementById(
+            "game-log"
+        );
+
+
+    if (!logArea) {
+
+        const table =
+            document.getElementById(
+                "table"
+            );
+
+
+        logArea =
+            document.createElement(
+                "section"
+            );
+
+
+        logArea.id =
+            "game-log";
+
+
+        logArea.style.marginTop =
+            "15px";
+
+
+        logArea.style.background =
+            "rgba(0,0,0,0.35)";
+
+
+        logArea.style.borderRadius =
+            "12px";
+
+
+        logArea.style.padding =
+            "15px";
+
+
+        logArea.style.maxHeight =
+            "260px";
+
+
+        logArea.style.overflowY =
+            "auto";
+
+
+        logArea.style.textAlign =
+            "left";
+
+
+        const title =
+            document.createElement(
+                "h2"
+            );
+
+
+        title.textContent =
+            "Log della partita";
+
+
+        title.style.fontSize =
+            "18px";
+
+
+        title.style.margin =
+            "0 0 10px 0";
+
+
+        title.style.textAlign =
+            "center";
+
+
+        logArea.appendChild(
+            title
+        );
+
+
+        const entries =
+            document.createElement(
+                "div"
+            );
+
+
+        entries.id =
+            "game-log-entries";
+
+
+        logArea.appendChild(
+            entries
+        );
+
+
+        table.appendChild(
+            logArea
+        );
+
+    }
+
+
+    const entries =
+        document.getElementById(
+            "game-log-entries"
+        );
+
+
+    if (!entries) {
+
+        return;
+
+    }
+
+
+    entries.innerHTML = "";
+
+
+    if (
+        game.logs.length === 0
+    ) {
+
+        const empty =
+            document.createElement(
+                "div"
+            );
+
+
+        empty.textContent =
+            "Nessuna azione registrata.";
+
+
+        empty.style.color =
+            "#bbb";
+
+
+        entries.appendChild(
+            empty
+        );
+
+
+        return;
+
+    }
+
+
+    for (
+        let i = game.logs.length - 1;
+        i >= 0;
+        i--
+    ) {
+
+        const log =
+            game.logs[i];
+
+
+        const line =
+            document.createElement(
+                "div"
+            );
+
+
+        line.style.padding =
+            "5px 0";
+
+
+        line.style.borderBottom =
+            "1px solid rgba(255,255,255,0.08)";
+
+
+        line.style.fontSize =
+            "13px";
+
+
+        const round =
+            document.createElement(
+                "span"
+            );
+
+
+        round.textContent =
+            `[M${log.round}] `;
+
+
+        round.style.color =
+            "#ffd54a";
+
+
+        round.style.fontWeight =
+            "bold";
+
+
+        line.appendChild(
+            round
+        );
+
+
+        line.appendChild(
+            document.createTextNode(
+                log.text
+            )
+        );
+
+
+        entries.appendChild(
+            line
         );
 
     }
@@ -3272,7 +4244,7 @@ function renderGameInfo() {
 
 
 // ==========================================
-// AGGIORNAMENTO GENERALE
+// AGGIORNAMENTO TAVOLO
 // ==========================================
 
 function updateTable() {
@@ -3286,6 +4258,167 @@ function updateTable() {
     renderPlayerBid();
 
     renderGameInfo();
+
+    renderDeck();
+
+    renderLogs();
+
+}
+
+
+// ==========================================
+// FINE MANO
+// ==========================================
+
+function finishRound() {
+
+    game.phase =
+        "round-end";
+
+
+    game.currentPlayerId =
+        null;
+
+
+    addLog(
+        `Terminata la manche ${game.round}.`
+    );
+
+
+    // --------------------------------------
+    // RESET OFFERTE
+    // --------------------------------------
+
+    for (const player of game.players) {
+
+        player.bid = [];
+
+        player.bidValue = 0;
+
+        player.selectedCards = [];
+
+        player.bidConfirmed = false;
+
+        player.resolved = false;
+
+    }
+
+
+    // --------------------------------------
+    // RIFORNIMENTO
+    // PRIMA B, POI A
+    // --------------------------------------
+
+    const oldDeckSize =
+        game.deck.length;
+
+
+    replenishMarket(
+        "right"
+    );
+
+
+    replenishMarket(
+        "left"
+    );
+
+
+    if (
+        oldDeckSize !==
+        game.deck.length
+    ) {
+
+        addLog(
+            `Il mercato viene rifornito. Rimangono ${game.deck.length} carte nel mazzo.`
+        );
+
+    }
+
+
+    // --------------------------------------
+    // FINE DEL MAZZO
+    // --------------------------------------
+
+    if (
+        game.deck.length === 0
+    ) {
+
+        game.finalRound = true;
+
+
+        addLog(
+            "Il mazzo è esaurito. Si procede al conteggio finale."
+        );
+
+
+        finishGame();
+
+        return;
+
+    }
+
+
+    // --------------------------------------
+    // NUOVA MANO
+    // --------------------------------------
+
+    game.round++;
+
+    game.phase =
+        "bidding";
+
+
+    updateTable();
+
+
+    setMessage(
+        `Manche ${game.round}: scegli le carte da offrire.`
+    );
+
+
+    addLog(
+        `Inizia la manche ${game.round}.`
+    );
+
+
+    showBidButton();
+
+}
+
+
+// ==========================================
+// RIFORNIMENTO
+// ==========================================
+
+function replenishMarket(
+    side
+) {
+
+    const market =
+        game.market[side];
+
+
+    while (
+        market.length < 4 &&
+        game.deck.length > 0
+    ) {
+
+        const card =
+            drawCard();
+
+
+        if (!card) {
+
+            break;
+
+        }
+
+
+        market.push(
+            card
+        );
+
+    }
 
 }
 
@@ -3346,8 +4479,9 @@ function calculateScore(
             );
 
 
-        // 200 o più:
-        // valore pieno.
+        // ----------------------------------
+        // SOGLIA 200
+        // ----------------------------------
 
         if (
             value >= 200
@@ -3357,9 +4491,6 @@ function calculateScore(
                 value;
 
         } else {
-
-            // Meno di 200:
-            // valore -100, minimo 0.
 
             score +=
                 Math.max(
@@ -3409,11 +4540,11 @@ function calculateScore(
 
         }
 
-
-        // Nessun bonus aggiuntivo per
-        // il completamento delle 9 carte.
-
     }
+
+
+    // Nessun bonus aggiuntivo per
+    // la raccolta completa delle 9 carte.
 
 
     return score;
@@ -3453,13 +4584,6 @@ function finishGame() {
     }
 
 
-    updateTable();
-
-
-    // --------------------------------------
-    // CLASSIFICA
-    // --------------------------------------
-
     const ranking =
         [...game.players].sort(
             (a, b) =>
@@ -3470,6 +4594,23 @@ function finishGame() {
 
     const winner =
         ranking[0];
+
+
+    addLog(
+        "Partita terminata."
+    );
+
+
+    for (const player of ranking) {
+
+        addLog(
+            `${player.name}: ${player.score} punti.`
+        );
+
+    }
+
+
+    updateTable();
 
 
     if (
@@ -3555,6 +4696,7 @@ function finishGame() {
         line.appendChild(
             name
         );
+
 
         line.appendChild(
             score
