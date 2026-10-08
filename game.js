@@ -2,24 +2,25 @@
 // BOT: SCELTA OFFERTA
 // ==========================================
 
-function chooseBotBid(
-    player
-) {
+function chooseBotBid(player) {
 
     const candidates =
-        generateBidCandidates(
-            player
-        );
+        generateBidCandidates(player);
+
+    if (
+        !candidates ||
+        candidates.length === 0
+    ) {
+        return [];
+    }
 
 
     const targets =
-        getBotTargets(
-            player
-        );
+        getBotTargets(player);
 
 
     let bestBid =
-        null;
+        candidates[0];
 
     let bestScore =
         -Infinity;
@@ -27,9 +28,17 @@ function chooseBotBid(
 
     for (const bid of candidates) {
 
-        // ----------------------------------
+        if (
+            !Array.isArray(bid) ||
+            bid.length === 0
+        ) {
+            continue;
+        }
+
+
+        // ==================================
         // BLUFF DA SOLO
-        // ----------------------------------
+        // ==================================
 
         if (
             bid.length === 1 &&
@@ -37,17 +46,18 @@ function chooseBotBid(
         ) {
 
             /*
-             * Il Bluff da solo è praticamente
-             * un pass: non consente di prendere
+             * Il Bluff da solo è valido,
+             * ma non permette di prendere
              * alcun lotto.
              *
-             * Lo teniamo possibile, ma molto raro.
+             * Deve quindi essere molto raro.
              */
 
-            let score = -80;
+            let score =
+                -100;
 
             score +=
-                Math.random() * 10;
+                Math.random() * 5;
 
 
             if (
@@ -63,11 +73,13 @@ function chooseBotBid(
 
             }
 
-
             continue;
-
         }
 
+
+        // ==================================
+        // VALORE DELL'OFFERTA
+        // ==================================
 
         const bidValue =
             calculateBidValue(
@@ -75,9 +87,9 @@ function chooseBotBid(
             );
 
 
-        // ----------------------------------
-        // COSTO DELL'OFFERTA
-        // ----------------------------------
+        // ==================================
+        // COSTO DELLE CARTE SACRIFICATE
+        // ==================================
 
         const sacrificeCost =
             evaluateBidCost(
@@ -86,9 +98,9 @@ function chooseBotBid(
             );
 
 
-        // ----------------------------------
-        // VALORE DEI DUE LOTTI
-        // ----------------------------------
+        // ==================================
+        // VALORE DEL LOTTO A SINISTRA
+        // ==================================
 
         const leftGain =
             evaluateAcquisition(
@@ -97,6 +109,10 @@ function chooseBotBid(
                 bid
             );
 
+
+        // ==================================
+        // VALORE DEL LOTTO A DESTRA
+        // ==================================
 
         const rightGain =
             evaluateAcquisition(
@@ -117,9 +133,9 @@ function chooseBotBid(
             bestMarketGain;
 
 
-        // ----------------------------------
+        // ==================================
         // OBIETTIVI PRIORITARI
-        // ----------------------------------
+        // ==================================
 
         if (
             targets.length > 0
@@ -129,15 +145,17 @@ function chooseBotBid(
                 targets[0];
 
 
-            // ------------------------------
+            // ----------------------------------
             // TRIS DI 20
-            // ------------------------------
+            // ----------------------------------
 
             if (
                 target.type === "triple20"
             ) {
 
-                for (const card of bid) {
+                for (
+                    const card of bid
+                ) {
 
                     if (
                         card.type === "money" &&
@@ -147,12 +165,15 @@ function chooseBotBid(
                     ) {
 
                         /*
-                         * Non vogliamo sacrificare
-                         * una delle due carte che ci
-                         * permetterebbero il tris.
+                         * Il bot possiede già due
+                         * carte da 20 di questa valuta.
+                         *
+                         * Sacrificarne una significa
+                         * rinunciare al tris.
                          */
 
-                        score -= 190;
+                        score -=
+                            190;
 
                     }
 
@@ -161,15 +182,17 @@ function chooseBotBid(
             }
 
 
-            // ------------------------------
+            // ----------------------------------
             // TRIS DI 30
-            // ------------------------------
+            // ----------------------------------
 
             if (
                 target.type === "triple30"
             ) {
 
-                for (const card of bid) {
+                for (
+                    const card of bid
+                ) {
 
                     if (
                         card.type === "money" &&
@@ -178,7 +201,8 @@ function chooseBotBid(
                         card.value === 30
                     ) {
 
-                        score -= 210;
+                        score -=
+                            210;
 
                     }
 
@@ -187,9 +211,9 @@ function chooseBotBid(
             }
 
 
-            // ------------------------------
+            // ----------------------------------
             // RAGGIUNGERE 200
-            // ------------------------------
+            // ----------------------------------
 
             if (
                 target.type === "reach200"
@@ -204,23 +228,28 @@ function chooseBotBid(
 
                 const targetValue =
                     targetCards.reduce(
-                        (total, card) =>
-                            total + card.value,
+                        (
+                            total,
+                            card
+                        ) =>
+                            total +
+                            card.value,
                         0
                     );
 
 
                 /*
-                 * Se siamo vicini a 200,
-                 * le carte della valuta
-                 * diventano preziosissime.
+                 * Più il bot è vicino a 200,
+                 * più deve proteggere quella valuta.
                  */
 
                 if (
                     targetValue >= 180
                 ) {
 
-                    for (const card of bid) {
+                    for (
+                        const card of bid
+                    ) {
 
                         if (
                             card.type === "money" &&
@@ -228,7 +257,8 @@ function chooseBotBid(
                                 target.currency
                         ) {
 
-                            score -= 220;
+                            score -=
+                                220;
 
                         }
 
@@ -238,7 +268,9 @@ function chooseBotBid(
                     targetValue >= 160
                 ) {
 
-                    for (const card of bid) {
+                    for (
+                        const card of bid
+                    ) {
 
                         if (
                             card.type === "money" &&
@@ -246,7 +278,8 @@ function chooseBotBid(
                                 target.currency
                         ) {
 
-                            score -= 150;
+                            score -=
+                                150;
 
                         }
 
@@ -259,75 +292,72 @@ function chooseBotBid(
         }
 
 
-        // ----------------------------------
-        // PREMIO PER OFFERTE AGGRESSIVE
-        // ----------------------------------
+        // ==================================
+        // AGGRESSIVITÀ
+        // ==================================
 
         /*
-         * Il bot deve avere una vera propensione
-         * a mettere più carte sul tavolo.
+         * Qui spingiamo deliberatamente il bot
+         * verso offerte composte da più carte.
          *
-         * Non vogliamo però premiare
-         * indiscriminatamente le offerte enormi.
+         * 1 carta  = nessun bonus
+         * 2 carte  = buon bonus
+         * 3 carte  = bonus forte
+         * 4 carte  = bonus ancora forte
+         * 5+       = possibile, ma meno frequente
          */
 
         if (
             bid.length === 2
         ) {
 
-            score += 25;
+            score +=
+                30;
 
-        }
-
-
-        if (
+        } else if (
             bid.length === 3
         ) {
 
-            score += 35;
+            score +=
+                55;
 
-        }
-
-
-        if (
+        } else if (
             bid.length === 4
         ) {
 
-            score += 18;
+            score +=
+                65;
 
-        }
-
-
-        if (
+        } else if (
             bid.length >= 5
         ) {
 
-            score -=
-                (bid.length - 4) * 35;
+            score +=
+                45;
 
         }
 
 
-        // ----------------------------------
-        // PREMIO PER VALORE DELL'OFFERTA
-        // ----------------------------------
+        // ==================================
+        // VALORE MONETARIO DELL'OFFERTA
+        // ==================================
 
         if (
-            bidValue >= 100 &&
-            bidValue < 140
+            bidValue >= 100
         ) {
 
-            score += 20;
+            score +=
+                20;
 
         }
 
 
         if (
-            bidValue >= 140 &&
-            bidValue < 180
+            bidValue >= 140
         ) {
 
-            score += 35;
+            score +=
+                30;
 
         }
 
@@ -336,64 +366,62 @@ function chooseBotBid(
             bidValue >= 180
         ) {
 
-            score += 45;
+            score +=
+                35;
 
         }
 
 
-        // ----------------------------------
-        // AGGRESSIVITÀ BASATA SUL VALORE
-        // DEL LOTTO
-        // ----------------------------------
+        // ==================================
+        // AGGRESSIVITÀ IN BASE AL LOTTO
+        // ==================================
 
         if (
             bestMarketGain >= 300
         ) {
 
             /*
-             * Lotto molto importante:
-             * il bot è disposto a spendere.
+             * Lotto eccezionalmente importante:
+             * il bot è disposto a spendere parecchio.
              */
 
             score +=
-                bid.length * 22;
+                bid.length * 25;
 
         } else if (
             bestMarketGain >= 200
         ) {
 
             score +=
-                bid.length * 15;
+                bid.length * 18;
 
         } else if (
             bestMarketGain >= 100
         ) {
 
             score +=
-                bid.length * 8;
+                bid.length * 10;
 
         }
 
 
-        // ----------------------------------
+        // ==================================
         // COSTO DELLE CARTE
-        // ----------------------------------
+        // ==================================
 
         /*
-         * Il costo rimane importante, ma molto
-         * meno di prima.
-         *
-         * Prima: 0.45
-         * Ora: 0.25
+         * Il costo delle carte rimane importante,
+         * ma non deve impedire al bot di fare
+         * offerte aggressive.
          */
 
         score -=
             sacrificeCost * 0.25;
 
 
-        // ----------------------------------
-        // PREMIO SPECIFICO AL BLUFF
-        // ----------------------------------
+        // ==================================
+        // BLUFF
+        // ==================================
 
         const hasBluff =
             bid.some(
@@ -408,27 +436,28 @@ function chooseBotBid(
         ) {
 
             /*
-             * Il Bluff è particolarmente utile
-             * per rendere l'offerta più corposa
+             * Il Bluff permette di aumentare
+             * il numero di carte dell'offerta
              * senza aumentarne il valore.
              */
 
-            score += 18;
+            score +=
+                25;
 
         }
 
 
-        // ----------------------------------
+        // ==================================
         // VARIABILITÀ
-        // ----------------------------------
+        // ==================================
 
         score +=
-            Math.random() * 12;
+            Math.random() * 15;
 
 
-        // ----------------------------------
-        // SCELTA FINALE
-        // ----------------------------------
+        // ==================================
+        // SCELTA DELLA MIGLIORE OFFERTA
+        // ==================================
 
         if (
             score >
