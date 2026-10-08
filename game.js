@@ -34,6 +34,7 @@ function createDeck() {
 
     let cardId = 1;
 
+
     // Banconote
     for (const currency of CURRENCIES) {
 
@@ -50,29 +51,19 @@ function createDeck() {
 
     }
 
-// Monete
-for (let i = 0; i < 6; i++) {
 
-    deck.push({
-        id: cardId++,
-        type: "coin",
-        currency: null,
-        value: 10
-    });
-
-}
-
-    // Play Money
-    for (let i = 0; i < 5; i++) {
+    // Monete
+    for (let i = 0; i < 6; i++) {
 
         deck.push({
             id: cardId++,
-            type: "play-money",
+            type: "coin",
             currency: null,
-            value: 0
+            value: 10
         });
 
     }
+
 
     return deck;
 }
@@ -88,10 +79,12 @@ function shuffle(deck) {
 
     for (let i = shuffled.length - 1; i > 0; i--) {
 
-        const j = Math.floor(Math.random() * (i + 1));
+        const j =
+            Math.floor(Math.random() * (i + 1));
 
         [shuffled[i], shuffled[j]] =
             [shuffled[j], shuffled[i]];
+
     }
 
     return shuffled;
@@ -128,20 +121,23 @@ function createPlayers(numberOfPlayers) {
 
     for (let i = 0; i < numberOfPlayers; i++) {
 
-    players.push({
-    id: i + 1,
+        players.push({
 
-    name:
-        i === 0
-            ? "Tu"
-            : `Bot ${i}`,
+            id: i + 1,
 
-    hand: [],
+            name:
+                i === 0
+                    ? "Tu"
+                    : `Bot ${i}`,
 
-    bid: [],
+            hand: [],
 
-    selectedCards: []
-});
+            bid: [],
+
+            selectedCards: []
+
+        });
+
     }
 
     return players;
@@ -167,59 +163,62 @@ function setupGame(numberOfPlayers = 4) {
 
     game.round = 1;
 
-    game.deck = shuffle(createDeck());
+    game.deck =
+        shuffle(createDeck());
 
     game.players =
         createPlayers(numberOfPlayers);
 
     game.market.left = [];
+
     game.market.right = [];
 
 
-// Distribuzione iniziale
-for (const player of game.players) {
+    // ======================================
+    // DISTRIBUZIONE INIZIALE
+    // ======================================
 
-    // 6 carte dal mazzo
-    for (let i = 0; i < 6; i++) {
+    for (const player of game.players) {
 
-        player.hand.push(
-            drawCard()
-        );
+        // 6 carte dal mazzo
+        for (let i = 0; i < 6; i++) {
 
-    }
+            player.hand.push(
+                drawCard()
+            );
 
-}
-
-
-// Play Money
-// Ogni giocatore riceve una carta
-// che vale 0 e può essere usata
-// per nascondere la composizione dell'offerta.
-
-for (const player of game.players) {
-
-    const bluffIndex =
-        game.deck.findIndex(
-            card => card.type === "play-money"
-        );
-
-    if (bluffIndex !== -1) {
-
-        const bluffCard =
-            game.deck.splice(
-                bluffIndex,
-                1
-            )[0];
-
-        player.hand.push(
-            bluffCard
-        );
+        }
 
     }
 
-}
 
-    // Offerte iniziali
+    // ======================================
+    // PLAY MONEY
+    // ======================================
+
+    // Ogni giocatore riceve una Play Money.
+    // Vale 0 e non viene pescata dal mazzo.
+
+    for (const player of game.players) {
+
+        player.hand.push({
+
+            id: `play-${player.id}`,
+
+            type: "play-money",
+
+            currency: null,
+
+            value: 0
+
+        });
+
+    }
+
+
+    // ======================================
+    // OFFERTE INIZIALI
+    // ======================================
 
     for (let i = 0; i < 4; i++) {
 
@@ -244,8 +243,13 @@ for (const player of game.players) {
 
 setupGame(4);
 
-console.log("Partita creata:");
+console.log(
+    "Partita creata:"
+);
+
 console.log(game);
+
+
 // ==========================================
 // VISUALIZZAZIONE DEI GIOCATORI
 // ==========================================
@@ -263,13 +267,15 @@ function renderPlayers() {
         const playerElement =
             document.createElement("div");
 
-        playerElement.className = "player";
+        playerElement.className =
+            "player";
 
 
         const nameElement =
             document.createElement("div");
 
-        nameElement.className = "player-name";
+        nameElement.className =
+            "player-name";
 
         nameElement.textContent =
             player.name;
@@ -278,7 +284,8 @@ function renderPlayers() {
         const cardsElement =
             document.createElement("div");
 
-        cardsElement.className = "cards";
+        cardsElement.className =
+            "cards";
 
 
         for (const card of player.hand) {
@@ -286,57 +293,80 @@ function renderPlayers() {
             const cardElement =
                 document.createElement("div");
 
-            cardElement.className = "card";
-
-if (player.id === 1) {
-
-    cardElement.textContent =
-        card.value;
-
-  cardElement.addEventListener(
-    "click",
-    function () {
-
-        cardElement.classList.toggle(
-            "selected"
-        );
+            cardElement.className =
+                "card";
 
 
-        const selected =
-            player.selectedCards;
+            // ==================================
+            // MANO DEL GIOCATORE
+            // ==================================
 
-        const index =
-            selected.indexOf(card.id);
+            if (player.id === 1) {
 
-
-        if (index === -1) {
-
-            selected.push(card.id);
-
-        } else {
-
-            selected.splice(index, 1);
-
-        }
+                cardElement.textContent =
+                    card.value;
 
 
-        console.log(
-            "Carte selezionate:",
-            player.selectedCards
-        );
+                cardElement.addEventListener(
+                    "click",
+                    function () {
 
-    }
-);
-} else {
+                        cardElement.classList.toggle(
+                            "selected"
+                        );
 
-    cardElement.textContent =
-        "?";
 
-}
+                        const selected =
+                            player.selectedCards;
+
+
+                        const index =
+                            selected.indexOf(
+                                card.id
+                            );
+
+
+                        if (index === -1) {
+
+                            selected.push(
+                                card.id
+                            );
+
+                        } else {
+
+                            selected.splice(
+                                index,
+                                1
+                            );
+
+                        }
+
+
+                        console.log(
+                            "Carte selezionate:",
+                            player.selectedCards
+                        );
+
+                    }
+                );
+
+
+            } else {
+
+                // ==================================
+                // MANO DEI BOT
+                // ==================================
+
+                cardElement.textContent =
+                    "?";
+
+            }
+
 
             cardsElement.appendChild(
                 cardElement
             );
+
         }
 
 
@@ -351,12 +381,15 @@ if (player.id === 1) {
         playersContainer.appendChild(
             playerElement
         );
+
     }
+
 }
 
 
 // Disegna la partita appena creata
 renderPlayers();
+
 
 // ==========================================
 // VISUALIZZAZIONE DELLE OFFERTE
@@ -365,22 +398,32 @@ renderPlayers();
 function renderMarket() {
 
     const leftMarket =
-        document.getElementById("market-left");
+        document.getElementById(
+            "market-left"
+        );
 
     const rightMarket =
-        document.getElementById("market-right");
+        document.getElementById(
+            "market-right"
+        );
 
 
     leftMarket.innerHTML = "";
+
     rightMarket.innerHTML = "";
 
+
+    // ======================================
+    // OFFERTA A
+    // ======================================
 
     for (const card of game.market.left) {
 
         const cardElement =
             document.createElement("div");
 
-        cardElement.className = "card";
+        cardElement.className =
+            "card";
 
         cardElement.textContent =
             card.value;
@@ -388,15 +431,21 @@ function renderMarket() {
         leftMarket.appendChild(
             cardElement
         );
+
     }
 
+
+    // ======================================
+    // OFFERTA B
+    // ======================================
 
     for (const card of game.market.right) {
 
         const cardElement =
             document.createElement("div");
 
-        cardElement.className = "card";
+        cardElement.className =
+            "card";
 
         cardElement.textContent =
             card.value;
@@ -404,58 +453,83 @@ function renderMarket() {
         rightMarket.appendChild(
             cardElement
         );
+
     }
+
 }
 
 
 // Disegna le offerte
 renderMarket();
+
+
 // ==========================================
 // CONFERMA OFFERTA DEL GIOCATORE
 // ==========================================
 
 function confirmBid() {
 
-    const player = game.players[0];
+    const player =
+        game.players[0];
 
+
+    // Nessuna carta selezionata
     if (player.selectedCards.length === 0) {
 
-        alert("Seleziona almeno una carta.");
+        alert(
+            "Seleziona almeno una carta."
+        );
 
         return;
     }
 
 
-    player.bid = player.hand.filter(
-        card =>
-            player.selectedCards.includes(card.id)
-    );
+    // Recupera le carte selezionate
+    player.bid =
+        player.hand.filter(
+            card =>
+                player.selectedCards.includes(
+                    card.id
+                )
+        );
 
 
     console.log(
         "Offerta del giocatore:",
         player.bid
     );
+
+
+    // ======================================
+    // VISUALIZZA L'OFFERTA
+    // ======================================
+
     const bidContainer =
-    document.getElementById("player-bid");
+        document.getElementById(
+            "player-bid"
+        );
 
-bidContainer.innerHTML = "";
+
+    bidContainer.innerHTML = "";
 
 
-for (const card of player.bid) {
+    for (const card of player.bid) {
 
-    const cardElement =
-        document.createElement("div");
+        const cardElement =
+            document.createElement("div");
 
-    cardElement.className = "card";
+        cardElement.className =
+            "card";
 
-    cardElement.textContent =
-        card.value;
+        cardElement.textContent =
+            card.value;
 
-    bidContainer.appendChild(
-        cardElement
-    );
-}
+        bidContainer.appendChild(
+            cardElement
+        );
+
+    }
+
 }
 
 
