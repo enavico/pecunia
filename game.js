@@ -1,3 +1,4 @@
+```javascript
 // ==========================================
 // DATI DEL GIOCO
 // ==========================================
@@ -42,7 +43,6 @@ const game = {
     market: {
 
         left: [],
-
         right: []
 
     },
@@ -398,6 +398,12 @@ function setupGame() {
         }
 
 
+        // ----------------------------------
+        // BLUFF
+        // La carta ha un proprietario
+        // permanente.
+        // ----------------------------------
+
         player.hand.push({
 
             id:
@@ -410,7 +416,10 @@ function setupGame() {
                 null,
 
             value:
-                0
+                0,
+
+            ownerId:
+                player.id
 
         });
 
@@ -488,6 +497,206 @@ function getPlayerById(
         player =>
             player.id === id
     );
+
+}
+
+
+// ==========================================
+// RESTITUZIONE BLUFF
+// ==========================================
+
+function returnBluffCardsToOwners() {
+
+    const bluffCards = [];
+
+
+    // --------------------------------------
+    // BLUFF NELLE MANI
+    // --------------------------------------
+
+    for (const player of game.players) {
+
+        const remainingHand = [];
+
+
+        for (const card of player.hand) {
+
+            if (
+                card.type === "play-money"
+            ) {
+
+                bluffCards.push(
+                    card
+                );
+
+            } else {
+
+                remainingHand.push(
+                    card
+                );
+
+            }
+
+        }
+
+
+        player.hand =
+            remainingHand;
+
+    }
+
+
+    // --------------------------------------
+    // BLUFF NELLE OFFERTE
+    // --------------------------------------
+
+    for (const player of game.players) {
+
+        const remainingBid = [];
+
+
+        for (const card of player.bid) {
+
+            if (
+                card.type === "play-money"
+            ) {
+
+                bluffCards.push(
+                    card
+                );
+
+            } else {
+
+                remainingBid.push(
+                    card
+                );
+
+            }
+
+        }
+
+
+        player.bid =
+            remainingBid;
+
+
+        player.bidValue =
+            calculateBidValue(
+                player.bid
+            );
+
+    }
+
+
+    // --------------------------------------
+    // BLUFF NEL MERCATO
+    // --------------------------------------
+
+    for (
+        const side of [
+            "left",
+            "right"
+        ]
+    ) {
+
+        const remainingMarket = [];
+
+
+        for (
+            const card of
+            game.market[side]
+        ) {
+
+            if (
+                card.type === "play-money"
+            ) {
+
+                bluffCards.push(
+                    card
+                );
+
+            } else {
+
+                remainingMarket.push(
+                    card
+                );
+
+            }
+
+        }
+
+
+        game.market[side] =
+            remainingMarket;
+
+    }
+
+
+    // --------------------------------------
+    // RESTITUISCE OGNI BLUFF
+    // AL PROPRIO PROPRIETARIO
+    // --------------------------------------
+
+    for (const bluff of bluffCards) {
+
+        const owner =
+            getPlayerById(
+                bluff.ownerId
+            );
+
+
+        if (!owner) {
+
+            console.warn(
+                `Proprietario della BLUFF non trovato: ${bluff.id}`
+            );
+
+            continue;
+
+        }
+
+
+        const alreadyOwned =
+            owner.hand.some(
+                card =>
+                    card.id === bluff.id
+            );
+
+
+        if (!alreadyOwned) {
+
+            owner.hand.push(
+                bluff
+            );
+
+        }
+
+    }
+
+
+    // --------------------------------------
+    // CONTROLLO DI SICUREZZA
+    // --------------------------------------
+
+    for (const player of game.players) {
+
+        const hasOwnBluff =
+            player.hand.some(
+                card =>
+                    card.type === "play-money" &&
+                    card.ownerId === player.id
+            );
+
+
+        if (!hasOwnBluff) {
+
+            console.warn(
+                `BLUFF del giocatore ${player.id} non trovata a fine manche.`
+            );
+
+        }
+
+    }
 
 }
 
@@ -747,9 +956,6 @@ function evaluateObjectiveScore(
 
         } else {
 
-            // Più ci si avvicina a 200,
-            // più il valore aumenta rapidamente.
-
             if (
                 value >= 180
             ) {
@@ -888,10 +1094,6 @@ function cardStrategicValue(
     }
 
 
-    // --------------------------------------
-    // VALUTAZIONE MARGINALE
-    // --------------------------------------
-
     const before =
         evaluateObjectiveScore(
             player.hand
@@ -1028,9 +1230,6 @@ function evaluateBidCost(
         );
 
 
-    // Quanto il giocatore perde
-    // privandosi delle carte offerte.
-
     return Math.max(
         0,
         before - after
@@ -1104,10 +1303,6 @@ function evaluateAcquisition(
     let value =
         after - before;
 
-
-    // --------------------------------------
-    // PREMIO ESPLICITO PER OBIETTIVI
-    // --------------------------------------
 
     const simulated =
         [
@@ -1488,10 +1683,6 @@ function chooseBotBid(
 
             let score = 0;
 
-
-            // Se il bot è già vicino
-            // ai suoi obiettivi, preferisce
-            // conservare le proprie carte.
 
             score += 35;
 
@@ -2066,9 +2257,6 @@ function chooseBotAction(
         );
 
 
-    // Se nessun obiettivo vale davvero
-    // il sacrificio, recupera le carte.
-
     if (
         best.type !== "pass" &&
         best.targetValue <
@@ -2312,16 +2500,10 @@ function executeAction(
             [...player.bid];
 
 
-        // Il giocatore prende l'offerta
-        // dell'avversario.
-
         player.hand.push(
             ...targetBid
         );
 
-
-        // La propria offerta passa
-        // all'avversario.
 
         target.bid =
             playerBid;
@@ -2705,8 +2887,6 @@ function confirmBid() {
         );
 
 
-    // Le carte offerte escono dalla mano.
-
     player.hand =
         player.hand.filter(
             card =>
@@ -3057,7 +3237,7 @@ function createCardElement(
 
 
     // --------------------------------------
-    // PLAY MONEY
+    // PLAY MONEY / BLUFF
     // --------------------------------------
 
     if (
@@ -3402,9 +3582,6 @@ function renderPlayers() {
                     card.id
                 );
 
-
-            // Le mani dei bot sono sempre
-            // coperte.
 
             const hidden =
                 !isHuman;
@@ -4280,6 +4457,15 @@ function finishRound() {
         null;
 
 
+    // --------------------------------------
+    // RESTITUZIONE BLUFF
+    // Ogni BLUFF torna sempre al proprio
+    // proprietario alla fine della manche.
+    // --------------------------------------
+
+    returnBluffCardsToOwners();
+
+
     addLog(
         `Terminata la manche ${game.round}.`
     );
@@ -4790,3 +4976,4 @@ console.log(
             player.hand.length
     )
 );
+```
