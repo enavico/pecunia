@@ -50,17 +50,17 @@ function createDeck() {
 
     }
 
-    // Monete
-    for (let value = 1; value <= 6; value++) {
+// Monete
+for (let i = 0; i < 6; i++) {
 
-        deck.push({
-            id: cardId++,
-            type: "coin",
-            currency: null,
-            value: value
-        });
+    deck.push({
+        id: cardId++,
+        type: "coin",
+        currency: null,
+        value: 10
+    });
 
-    }
+}
 
     // Play Money
     for (let i = 0; i < 5; i++) {
@@ -176,25 +176,48 @@ function setupGame(numberOfPlayers = 4) {
     game.market.right = [];
 
 
-    // Distribuzione iniziale
-    for (const player of game.players) {
+// Distribuzione iniziale
+for (const player of game.players) {
 
-        for (let i = 0; i < 6; i++) {
+    // 6 carte dal mazzo
+    for (let i = 0; i < 6; i++) {
 
-            player.hand.push(
-                drawCard()
-            );
-
-        }
+        player.hand.push(
+            drawCard()
+        );
 
     }
 
+}
 
-    // Play Money aggiuntive
-    // Per ora lasciamo che il setup
-    // venga completato dal motore
-    // nei prossimi passaggi.
 
+// Play Money
+// Ogni giocatore riceve una carta
+// che vale 0 e può essere usata
+// per nascondere la composizione dell'offerta.
+
+for (const player of game.players) {
+
+    const bluffIndex =
+        game.deck.findIndex(
+            card => card.type === "play-money"
+        );
+
+    if (bluffIndex !== -1) {
+
+        const bluffCard =
+            game.deck.splice(
+                bluffIndex,
+                1
+            )[0];
+
+        player.hand.push(
+            bluffCard
+        );
+
+    }
+
+}
 
     // Offerte iniziali
 
