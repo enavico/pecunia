@@ -301,19 +301,32 @@ function renderPlayers() {
             // MANO DEL GIOCATORE
             // ==================================
 
-            if (player.id === 1) {
+if (player.id === 1) {
 
+    // Una volta confermata l'offerta,
+    // le carte non sono più modificabili
+    if (player.bidConfirmed) {
+
+        cardElement.classList.add(
+            "selected"
+        );
+
+    }
                 cardElement.textContent =
                     card.value;
 
 
-                cardElement.addEventListener(
-                    "click",
-                    function () {
+               cardElement.addEventListener(
+    "click",
+    function () {
 
-                        cardElement.classList.toggle(
-                            "selected"
-                        );
+        if (player.bidConfirmed) {
+            return;
+        }
+
+        cardElement.classList.toggle(
+            "selected"
+        );
 
 
                         const selected =
@@ -494,6 +507,10 @@ function confirmBid() {
         );
 
 
+    // Blocca l'offerta
+    player.bidConfirmed = true;
+
+
     console.log(
         "Offerta del giocatore:",
         player.bid
@@ -529,6 +546,22 @@ function confirmBid() {
         );
 
     }
+
+
+    // ======================================
+    // CAMBIO DI STATO
+    // ======================================
+
+    const message =
+        document.querySelector(".message");
+
+    message.firstChild.textContent =
+        "Offerta confermata. I bot stanno giocando...";
+
+
+    console.log(
+        "Il giocatore ha confermato l'offerta."
+    );
 
 }
 
