@@ -129,19 +129,20 @@ function createPlayers(numberOfPlayers) {
 
     for (let i = 0; i < numberOfPlayers; i++) {
 
-        players.push({
-            id: i + 1,
+    players.push({
+    id: i + 1,
 
-            name:
-                i === 0
-                    ? "Tu"
-                    : `Bot ${i}`,
+    name:
+        i === 0
+            ? "Tu"
+            : `Bot ${i}`,
 
-            hand: [],
+    hand: [],
 
-            bid: []
-        });
+    bid: [],
 
+    selectedCards: []
+});
     }
 
     return players;
@@ -270,17 +271,40 @@ if (player.id === 1) {
     cardElement.textContent =
         card.value;
 
-    cardElement.addEventListener(
-        "click",
-        function () {
+  cardElement.addEventListener(
+    "click",
+    function () {
 
-            cardElement.classList.toggle(
-                "selected"
-            );
+        cardElement.classList.toggle(
+            "selected"
+        );
+
+
+        const selected =
+            player.selectedCards;
+
+        const index =
+            selected.indexOf(card.id);
+
+
+        if (index === -1) {
+
+            selected.push(card.id);
+
+        } else {
+
+            selected.splice(index, 1);
 
         }
-    );
 
+
+        console.log(
+            "Carte selezionate:",
+            player.selectedCards
+        );
+
+    }
+);
 } else {
 
     cardElement.textContent =
