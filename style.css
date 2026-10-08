@@ -1,6 +1,7 @@
 * {
     box-sizing: border-box;
 }
+
 :root {
     --table-green: #315f3a;
     --table-green-dark: #254b2d;
@@ -10,6 +11,7 @@
     --panel: rgba(0, 0, 0, 0.22);
     --panel-strong: rgba(0, 0, 0, 0.32);
 }
+
 body {
     margin: 0;
     min-height: 100vh;
@@ -24,13 +26,16 @@ body {
         Arial,
         sans-serif;
 }
+
 /* ==========================================
    HEADER
    ========================================== */
+
 header {
     text-align: center;
     padding: 22px 20px 18px;
 }
+
 header h1 {
     margin: 0 0 7px;
     font-family: Georgia, "Times New Roman", serif;
@@ -39,14 +44,17 @@ header h1 {
     letter-spacing: 0.04em;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.45);
 }
+
 #game-info {
     font-size: 13px;
     color: #c7cec8;
     letter-spacing: 0.02em;
 }
+
 /* ==========================================
    TAVOLO
    ========================================== */
+
 #table {
     position: relative;
     max-width: 1240px;
@@ -72,7 +80,9 @@ header h1 {
     justify-content: space-between;
     gap: 24px;
 }
+
 /* sottile bordo interno da vero tavolo */
+
 #table::before {
     content: "";
     position: absolute;
@@ -81,9 +91,11 @@ header h1 {
     border-radius: 12px;
     pointer-events: none;
 }
+
 /* ==========================================
    GIOCATORI
    ========================================== */
+
 .players {
     position: relative;
     z-index: 1;
@@ -91,6 +103,7 @@ header h1 {
     grid-template-columns: repeat(4, 1fr);
     gap: 14px;
 }
+
 .player {
     min-width: 0;
     padding: 15px 13px 13px;
@@ -112,6 +125,7 @@ header h1 {
         box-shadow 0.2s,
         transform 0.2s;
 }
+
 .player.active {
     border-color: var(--gold);
     background:
@@ -126,26 +140,31 @@ header h1 {
         inset 0 1px 0 rgba(255, 255, 255, 0.05);
     transform: translateY(-2px);
 }
+
 .player-name {
     margin-bottom: 8px;
     font-size: 16px;
     font-weight: 700;
     letter-spacing: 0.02em;
 }
+
 .player-status {
     min-height: 18px;
     margin-bottom: 8px;
     font-size: 11px;
     color: var(--text-soft);
 }
+
 .player-score {
     margin-top: 10px;
     font-size: 11px;
     color: #cdd2cd;
 }
+
 /* ==========================================
    CARTE — BASE
    ========================================== */
+
 .cards {
     display: flex;
     justify-content: center;
@@ -153,6 +172,7 @@ header h1 {
     flex-wrap: wrap;
     gap: 8px;
 }
+
 .card {
     position: relative;
     width: 70px;
@@ -174,7 +194,9 @@ header h1 {
         box-shadow 0.14s ease,
         filter 0.14s ease;
 }
+
 /* piccolo effetto di carta */
+
 .card::after {
     content: "";
     position: absolute;
@@ -189,15 +211,18 @@ header h1 {
         );
     pointer-events: none;
 }
+
 .card.clickable {
     cursor: pointer;
 }
+
 .card.clickable:hover {
     transform: translateY(-5px);
     box-shadow:
         0 9px 15px rgba(0, 0, 0, 0.38),
         0 1px 1px rgba(255, 255, 255, 0.3) inset;
 }
+
 .card.selected {
     transform: translateY(-11px);
     outline: 2px solid var(--gold-light);
@@ -205,9 +230,11 @@ header h1 {
         0 12px 19px rgba(0, 0, 0, 0.48),
         0 0 0 3px rgba(231, 198, 90, 0.18);
 }
+
 /* ==========================================
    SIMBOLI DELLE VALUTE
    ========================================== */
+
 .card[class*="currency-"]::before {
     position: absolute;
     top: 7px;
@@ -217,30 +244,39 @@ header h1 {
     font-weight: 800;
     opacity: 0.78;
 }
+
 .currency-euro::before {
     content: "€";
 }
+
 .currency-dollar::before {
     content: "$";
 }
+
 .currency-franc::before {
     content: "₣";
 }
+
 .currency-pound::before {
     content: "£";
 }
+
 .currency-yen::before {
     content: "¥";
 }
+
 .currency-ruble::before {
     content: "₽";
 }
+
 .currency-peso::before {
     content: "₱";
 }
+
 /* ==========================================
    TESTO CARTE
    ========================================== */
+
 .card-currency {
     margin-top: 10px;
     margin-bottom: 3px;
@@ -250,6 +286,7 @@ header h1 {
     text-transform: uppercase;
     opacity: 0.70;
 }
+
 .card-value {
     font-size: 27px;
     line-height: 1;
@@ -258,6 +295,7 @@ header h1 {
     text-shadow:
         0 1px 0 rgba(255, 255, 255, 0.35);
 }
+
 .card-serial {
     position: absolute;
     right: 6px;
@@ -266,54 +304,76 @@ header h1 {
     font-weight: 600;
     opacity: 0.48;
 }
+
 /* ==========================================
    COLORI VALUTE
    ========================================== */
-/* EURO — azzurro */
+
+/* EURO — azzurro
+   Più saturo e leggermente più freddo */
+
 .currency-euro {
     background:
-        linear-gradient(145deg, #e8f2ff 0%, #b8d0e8 100%);
-    border-color: #547da5;
+        linear-gradient(145deg, #d8edff 0%, #8db9df 100%);
+    border-color: #3d73a4;
 }
-/* DOLLAR — verde */
+
+/* DOLLAR — verde
+   Verde più netto, meno desaturato */
+
 .currency-dollar {
     background:
-        linear-gradient(145deg, #e7f7e8 0%, #afd3b2 100%);
-    border-color: #4f8958;
+        linear-gradient(145deg, #d8f2dc 0%, #87c294 100%);
+    border-color: #39764a;
 }
+
 /* FRANC — viola */
+
 .currency-franc {
     background:
-        linear-gradient(145deg, #f4e5fa 0%, #d2afd9 100%);
-    border-color: #8d5c99;
+        linear-gradient(145deg, #f1d9f8 0%, #c18dcc 100%);
+    border-color: #80488e;
 }
+
 /* POUND — rosso / corallo */
+
 .currency-pound {
     background:
-        linear-gradient(145deg, #fbe5e5 0%, #ddaeb0 100%);
-    border-color: #a5585c;
+        linear-gradient(145deg, #f9d8d8 0%, #d8898e 100%);
+    border-color: #9a464d;
 }
-/* YEN — giallo caldo */
+
+/* YEN — giallo caldo
+   Lasciato volutamente vicino alla versione precedente */
+
 .currency-yen {
     background:
         linear-gradient(145deg, #fff4cf 0%, #e6c875 100%);
     border-color: #aa8530;
 }
-/* RUBLE — grigio */
+
+/* RUBLE — grigio
+   Più caratterizzato: leggermente freddo e molto più contrastato */
+
 .currency-ruble {
     background:
-        linear-gradient(145deg, #f1f1f1 0%, #c8c8c8 100%);
-    border-color: #6f6f6f;
+        linear-gradient(145deg, #e8edf0 0%, #aebbc2 100%);
+    border-color: #596a73;
 }
-/* PESO — turchese */
+
+/* PESO — turchese
+   Più saturo per separarlo dall'azzurro */
+
 .currency-peso {
     background:
-        linear-gradient(145deg, #e1f5f2 0%, #a9d3cd 100%);
-    border-color: #43867e;
+        linear-gradient(145deg, #d3f1ed 0%, #78bfb5 100%);
+    border-color: #347b72;
 }
+
 /* ==========================================
    MONETA
    ========================================== */
+
 .card-coin {
     background:
         radial-gradient(
@@ -331,6 +391,7 @@ header h1 {
         inset 0 0 0 2px rgba(255, 255, 255, 0.30),
         inset 0 0 0 5px rgba(125, 94, 12, 0.18);
 }
+
 .card-coin::before {
     content: "10";
     position: absolute;
@@ -342,14 +403,17 @@ header h1 {
     color: #6d5410;
     opacity: 0.85;
 }
+
 .card-coin .card-value,
 .card-coin .card-currency,
 .card-coin .card-serial {
     display: none;
 }
+
 /* ==========================================
    PLAY MONEY
    ========================================== */
+
 .card-play-money {
     background:
         repeating-linear-gradient(
@@ -365,6 +429,7 @@ header h1 {
         0 3px 5px rgba(0, 0, 0, 0.25),
         inset 0 0 0 1px rgba(255, 255, 255, 0.4);
 }
+
 .card-play-money::before {
     content: "BLUFF";
     position: absolute;
@@ -377,18 +442,22 @@ header h1 {
     letter-spacing: 0.16em;
     color: #666;
 }
+
 .card-play-money .card-currency {
     display: none;
 }
+
 .card-play-money .card-value {
     font-size: 15px;
     letter-spacing: 0.03em;
     text-transform: uppercase;
     color: #555;
 }
+
 /* ==========================================
    RETRO DEL MAZZO
    ========================================== */
+
 .card-back {
     background:
         linear-gradient(
@@ -404,9 +473,11 @@ header h1 {
     font-size: 25px;
     font-weight: 800;
 }
+
 /* ==========================================
    MERCATO
    ========================================== */
+
 .center {
     position: relative;
     z-index: 1;
@@ -415,6 +486,7 @@ header h1 {
     align-items: flex-start;
     gap: 55px;
 }
+
 .market {
     position: relative;
     min-width: 330px;
@@ -426,6 +498,7 @@ header h1 {
     box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, 0.025);
 }
+
 .market-title {
     display: inline-block;
     margin-bottom: 13px;
@@ -437,12 +510,15 @@ header h1 {
     color: #f0f2ef;
     border-bottom: 1px solid rgba(255, 255, 255, 0.20);
 }
+
 .market .cards {
     min-height: 100px;
 }
+
 /* ==========================================
    MESSAGGIO / STATO
    ========================================== */
+
 .message {
     position: relative;
     z-index: 1;
@@ -462,12 +538,14 @@ header h1 {
     border-top: 1px solid rgba(255, 255, 255, 0.035);
     border-bottom: 1px solid rgba(255, 255, 255, 0.035);
 }
+
 #message-text {
     margin-bottom: 10px;
     font-size: 17px;
     font-weight: 600;
     color: #f0f2ee;
 }
+
 #player-bid {
     min-height: 100px;
     display: flex;
@@ -475,9 +553,11 @@ header h1 {
     align-items: center;
     gap: 8px;
 }
+
 /* ==========================================
    MANO
    ========================================== */
+
 #hand {
     position: relative;
     z-index: 1;
@@ -493,6 +573,7 @@ header h1 {
     box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, 0.025);
 }
+
 #hand h2 {
     margin: 0 0 16px;
     text-align: center;
@@ -501,15 +582,19 @@ header h1 {
     font-weight: 700;
     letter-spacing: 0.02em;
 }
+
 /* ==========================================
    BOT / CARTE NASCOSTE
    ========================================== */
+
 .player .card-back {
     opacity: 0.92;
 }
+
 /* ==========================================
    AZIONI
    ========================================== */
+
 .actions {
     position: relative;
     z-index: 1;
@@ -520,6 +605,7 @@ header h1 {
     flex-wrap: wrap;
     gap: 7px;
 }
+
 button {
     border: 1px solid rgba(0, 0, 0, 0.15);
     border-radius: 7px;
@@ -542,20 +628,24 @@ button {
         background 0.12s;
     margin: 3px;
 }
+
 button:hover {
     transform: translateY(-1px);
     box-shadow:
         0 4px 7px rgba(0, 0, 0, 0.25);
 }
+
 button:active {
     transform: translateY(1px);
 }
+
 button:disabled {
     opacity: 0.42;
     cursor: default;
     transform: none;
     box-shadow: none;
 }
+
 button.primary {
     background:
         linear-gradient(
@@ -570,9 +660,11 @@ button.primary {
         0 3px 6px rgba(0, 0, 0, 0.25),
         inset 0 1px 0 rgba(255, 255, 255, 0.35);
 }
+
 /* ==========================================
    PUNTEGGIO
    ========================================== */
+
 .scoreboard {
     margin-top: 15px;
     min-width: 250px;
@@ -582,6 +674,7 @@ button.primary {
     padding: 11px;
     border: 1px solid rgba(255, 255, 255, 0.05);
 }
+
 .score-line {
     display: flex;
     justify-content: space-between;
@@ -589,12 +682,15 @@ button.primary {
     border-bottom:
         1px solid rgba(255, 255, 255, 0.09);
 }
+
 .score-line:last-child {
     border-bottom: 0;
 }
+
 /* ==========================================
    CRONOLOGIA
    ========================================== */
+
 #game-log {
     position: relative;
     z-index: 1;
@@ -611,42 +707,53 @@ button.primary {
     box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, 0.02);
 }
+
 #game-log::-webkit-scrollbar {
     width: 6px;
 }
+
 #game-log::-webkit-scrollbar-track {
     background: rgba(0, 0, 0, 0.12);
 }
+
 #game-log::-webkit-scrollbar-thumb {
     background: rgba(255, 255, 255, 0.20);
     border-radius: 10px;
 }
+
 /* ==========================================
    RESPONSIVE
    ========================================== */
+
 @media (max-width: 1000px) {
     #table {
         margin-left: 15px;
         margin-right: 15px;
     }
+
     .players {
         grid-template-columns: repeat(2, 1fr);
     }
+
     .center {
         gap: 20px;
     }
+
     .market {
         min-width: 0;
         flex: 1;
     }
 }
+
 @media (max-width: 700px) {
     header {
         padding: 18px 12px 14px;
     }
+
     header h1 {
         font-size: 29px;
     }
+
     #table {
         min-height: 0;
         margin: 0 8px 20px;
@@ -654,51 +761,65 @@ button.primary {
         border-radius: 14px;
         gap: 18px;
     }
+
     #table::before {
         inset: 7px;
     }
+
     .players {
         grid-template-columns: 1fr;
         gap: 9px;
     }
+
     .player {
         padding: 12px;
     }
+
     .center {
         flex-direction: column;
         align-items: center;
         gap: 18px;
     }
+
     .market {
         width: 100%;
         padding: 12px 8px 15px;
     }
+
     .market-title {
         font-size: 16px;
     }
+
     .card {
         width: 62px;
         height: 88px;
     }
+
     .card-value {
         font-size: 24px;
     }
+
     .card-currency {
         font-size: 7px;
     }
+
     .card-coin {
         width: 62px;
         height: 62px;
     }
+
     #hand {
         padding: 15px 10px 18px;
     }
+
     #hand h2 {
         font-size: 17px;
     }
+
     #message-text {
         font-size: 15px;
     }
+
     #game-log {
         max-height: 160px;
     }
