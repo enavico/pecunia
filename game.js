@@ -411,8 +411,6 @@ function setupGame() {
             value:
                 0,
 
-            // Il proprietario originale
-            // del Bluff non cambia mai.
             ownerId:
                 player.id
 
@@ -1252,11 +1250,6 @@ function generateBidCandidates(
     /*
      * Il Bluff può essere aggiunto a qualunque
      * combinazione di carte reali.
-     *
-     * Prima generiamo tutte le combinazioni
-     * delle carte normali.
-     * Poi, per ogni combinazione, generiamo
-     * anche la versione con il Bluff.
      */
 
     const realCards =
@@ -1313,8 +1306,6 @@ function generateBidCandidates(
 
         }
 
-
-        // Offerta senza Bluff.
 
         candidates.push(
             bid
@@ -1503,27 +1494,26 @@ function chooseBotBid(
             bid[0].type === "play-money"
         ) {
 
-            let score = 0;
+            /*
+             * Il Bluff da solo è legalmente
+             * possibile, ma per il bot deve essere
+             * una scelta rara.
+             */
 
-
-            // Il Bluff da solo è un'offerta
-            // valida di una carta, ma il bot
-            // non potrà prendere alcun lotto.
-
-            score += 35;
+            let score = -80;
 
 
             if (
-                targets.length > 0
+                targets.length === 0
             ) {
 
-                score += 60;
+                score += 20;
 
             }
 
 
             score +=
-                Math.random() * 3;
+                Math.random() * 8;
 
 
             if (
@@ -1563,8 +1553,7 @@ function chooseBotBid(
 
 
         // ----------------------------------
-        // MIGLIOR LOTTO CHE POTREBBE
-        // OTTENERE
+        // VALORE DEI DUE MERCATI
         // ----------------------------------
 
         const leftGain =
@@ -1595,7 +1584,7 @@ function chooseBotBid(
 
 
         // ----------------------------------
-        // VALORE DELLA PRIORITÀ
+        // OBIETTIVO PRIORITARIO
         // ----------------------------------
 
         if (
@@ -1605,6 +1594,10 @@ function chooseBotBid(
             const target =
                 targets[0];
 
+
+            // ------------------------------
+            // TRIS DI 20
+            // ------------------------------
 
             if (
                 target.type === "triple20"
@@ -1619,7 +1612,14 @@ function chooseBotBid(
                         card.value === 20
                     ) {
 
-                        score -= 140;
+                        /*
+                         * Protegge le carte che servono
+                         * al tris, ma non in modo assoluto:
+                         * se il lotto è molto importante,
+                         * il bot può comunque sacrificarle.
+                         */
+
+                        score -= 190;
 
                     }
 
@@ -1627,6 +1627,10 @@ function chooseBotBid(
 
             }
 
+
+            // ------------------------------
+            // TRIS DI 30
+            // ------------------------------
 
             if (
                 target.type === "triple30"
@@ -1641,7 +1645,7 @@ function chooseBotBid(
                         card.value === 30
                     ) {
 
-                        score -= 160;
+                        score -= 210;
 
                     }
 
@@ -1649,6 +1653,10 @@ function chooseBotBid(
 
             }
 
+
+            // ------------------------------
+            // RAGGIUNGERE 200
+            // ------------------------------
 
             if (
                 target.type === "reach200"
@@ -1681,7 +1689,13 @@ function chooseBotBid(
                                 target.currency
                         ) {
 
-                            score -= 100;
+                            /*
+                             * Queste carte sono preziose,
+                             * ma possono comunque essere
+                             * sacrificate per un lotto enorme.
+                             */
+
+                            score -= 150;
 
                         }
 
@@ -1698,19 +1712,36 @@ function chooseBotBid(
         // COSTO GENERALE
         // ----------------------------------
 
+        /*
+         * Prima era 0.45.
+         *
+         * Abbassandolo a 0.25 il bot è molto
+         * più disposto a spendere carte per
+         * ottenere un lotto importante.
+         */
+
         score -=
-            sacrificeCost * 0.45;
+            sacrificeCost * 0.25;
 
 
         // ----------------------------------
-        // INCENTIVO A OFFERTE COMPATTE
+        // DIMENSIONE DELL'OFFERTA
         // ----------------------------------
+
+        /*
+         * Non vogliamo più che il bot consideri
+         * automaticamente una carta singola
+         * come la scelta migliore.
+         *
+         * Le offerte da 2-4 carte diventano
+         * normalmente più interessanti.
+         */
 
         if (
             bid.length === 1
         ) {
 
-            score += 22;
+            score -= 5;
 
         }
 
@@ -1719,29 +1750,22 @@ function chooseBotBid(
             bid.length === 2
         ) {
 
-            score += 12;
+            score += 25;
 
         }
 
 
         if (
-            bid.length >= 4
+            bid.length === 3
         ) {
 
-            score -=
-                (bid.length - 3) * 30;
+            score += 35;
 
         }
 
 
-        // ----------------------------------
-        // VALORE DELL'OFFERTA COME
-        // STRUMENTO PER AVERE PRIORITÀ
-        // ----------------------------------
-
         if (
-            bidValue >= 50 &&
-            bidValue <= 100
+            bid.length === 4
         ) {
 
             score += 18;
@@ -1750,10 +1774,40 @@ function chooseBotBid(
 
 
         if (
-            bidValue >= 120
+            bid.length >= 5
         ) {
 
-            score -= 10;
+            score -=
+                (bid.length - 4) * 35;
+
+        }
+
+
+        // ----------------------------------
+        // VALORE DELL'OFFERTA
+        // ----------------------------------
+
+        /*
+         * Il valore della propria offerta ora
+         * conta positivamente.
+         */
+
+        if (
+            bidValue >= 100 &&
+            bidValue < 140
+        ) {
+
+            score += 20;
+
+        }
+
+
+        if (
+            bidValue >= 140 &&
+            bidValue < 180
+        ) {
+
+            score += 35;
 
         }
 
@@ -1762,7 +1816,66 @@ function chooseBotBid(
             bidValue >= 180
         ) {
 
-            score -= 30;
+            score += 45;
+
+        }
+
+
+        // ----------------------------------
+        // PREMIO PER L'AGGRESSIVITÀ
+        // ----------------------------------
+
+        /*
+         * Se il lotto è molto importante,
+         * vale la pena fare un'offerta più grande.
+         */
+
+        if (
+            bestMarketGain >= 300
+        ) {
+
+            score +=
+                bid.length * 22;
+
+        } else if (
+            bestMarketGain >= 200
+        ) {
+
+            score +=
+                bid.length * 15;
+
+        } else if (
+            bestMarketGain >= 100
+        ) {
+
+            score +=
+                bid.length * 8;
+
+        }
+
+
+        // ----------------------------------
+        // BLUFF
+        // ----------------------------------
+
+        /*
+         * Il Bluff non aumenta il valore
+         * monetario dell'offerta, ma aumenta
+         * il numero di carte giocate.
+         *
+         * Lo premiamo leggermente perché può
+         * rendere più aggressiva la scelta
+         * senza costare valore monetario.
+         */
+
+        if (
+            bid.some(
+                card =>
+                    card.type === "play-money"
+            )
+        ) {
+
+            score += 18;
 
         }
 
@@ -1772,7 +1885,7 @@ function chooseBotBid(
         // ----------------------------------
 
         score +=
-            Math.random() * 5;
+            Math.random() * 12;
 
 
         if (
@@ -2085,8 +2198,7 @@ function chooseBotAction(
 
     actions.sort(
         (a, b) =>
-            b.targetValue -
-            a.targetValue
+            b.targetValue - a.targetValue
     );
 
 
@@ -2101,8 +2213,15 @@ function chooseBotAction(
         );
 
 
-    // Se nessun obiettivo vale davvero
-    // il sacrificio, recupera le carte.
+    // --------------------------------------
+    // SOGLIA DI CONVENIENZA
+    // --------------------------------------
+
+    /*
+     * La soglia viene mantenuta relativamente
+     * bassa: i bot devono essere disposti
+     * a correre qualche rischio.
+     */
 
     if (
         best.type !== "pass" &&
@@ -2890,13 +3009,6 @@ function confirmBid() {
         );
 
 
-    /*
-     * IMPORTANTE:
-     *
-     * Il BLUFF fa parte dell'offerta.
-     * Non viene escluso da player.bid.
-     */
-
     const realBid =
         selectedCards.filter(
             card =>
@@ -2919,15 +3031,6 @@ function confirmBid() {
                 card.id
         );
 
-
-    /*
-     * Le carte reali escono dalla mano.
-     *
-     * Il Bluff invece viene anch'esso
-     * considerato giocato, quindi esce
-     * dalla mano e finisce temporaneamente
-     * nell'offerta.
-     */
 
     player.hand =
         player.hand.filter(
@@ -2986,11 +3089,6 @@ function confirmBid() {
                 bot
             );
 
-
-        /*
-         * Il bot può includere il Bluff
-         * nella propria offerta.
-         */
 
         const bidIds =
             chosenBid.map(
@@ -4697,12 +4795,6 @@ function returnBluffCardsToOwners() {
 
         } else {
 
-            /*
-             * Fallback di sicurezza:
-             * se per qualche motivo il Bluff fosse
-             * completamente scomparso, viene ricreato.
-             */
-
             player.hand.push({
 
                 id:
@@ -5053,8 +5145,7 @@ function finishGame() {
     const ranking =
         [...game.players].sort(
             (a, b) =>
-                b.score -
-                a.score
+                b.score - a.score
         );
 
 
