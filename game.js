@@ -8,8 +8,7 @@ const CURRENCIES = [
     "FRANC",
     "POUND",
     "YEN",
-    "RUBLE",
-    "PESO"
+    "RUBLE"
 ];
 
 const VALUES = [
