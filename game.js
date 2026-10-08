@@ -134,7 +134,9 @@ function createPlayers(numberOfPlayers) {
 
             bid: [],
 
-            selectedCards: []
+            selectedCards: [],
+
+            bidConfirmed: false
 
         });
 
@@ -301,32 +303,47 @@ function renderPlayers() {
             // MANO DEL GIOCATORE
             // ==================================
 
-if (player.id === 1) {
+            if (player.id === 1) {
 
-    // Una volta confermata l'offerta,
-    // le carte non sono più modificabili
-    if (player.bidConfirmed) {
-
-        cardElement.classList.add(
-            "selected"
-        );
-
-    }
                 cardElement.textContent =
                     card.value;
 
 
-               cardElement.addEventListener(
-    "click",
-    function () {
+                // Se l'offerta è già confermata,
+                // mantieni la carta evidenziata
+                if (player.bidConfirmed) {
 
-        if (player.bidConfirmed) {
-            return;
-        }
+                    if (
+                        player.selectedCards.includes(
+                            card.id
+                        )
+                    ) {
 
-        cardElement.classList.toggle(
-            "selected"
-        );
+                        cardElement.classList.add(
+                            "selected"
+                        );
+
+                    }
+
+                }
+
+
+                cardElement.addEventListener(
+                    "click",
+                    function () {
+
+                        // Dopo la conferma
+                        // la mano non è più modificabile
+                        if (player.bidConfirmed) {
+
+                            return;
+
+                        }
+
+
+                        cardElement.classList.toggle(
+                            "selected"
+                        );
 
 
                         const selected =
@@ -477,6 +494,187 @@ renderMarket();
 
 
 // ==========================================
+// CALCOLO DEL VALORE DI UN'OFFERTA
+// ==========================================
+
+function calculateBidValue(cards) {
+
+    return cards.reduce(
+        (total, card) =>
+            total + card.value,
+        0
+    );
+
+}
+
+
+// ==========================================
+// SCELTA DELL'OFFERTA DEI BOT
+// ==========================================
+
+function chooseBotBid(player) {
+
+    const cards =
+        [...player.hand];
+
+
+    // Valore delle due offerte
+    const leftValue =
+        calculateBidValue(
+            game.market.left
+        );
+
+    const rightValue =
+        calculateBidValue(
+            game.market.right
+        );
+
+    const bestMarketValue =
+        Math.max(
+            leftValue,
+            rightValue
+        );
+
+
+    // Carte utilizzabili per l'offerta
+    const moneyCards =
+        cards
+            .filter(
+                card =>
+                    card.type === "money" ||
+                    card.type === "coin"
+            )
+            .sort(
+                (a, b) =>
+                    b.value - a.value
+            );
+
+
+    let bid = [];
+
+    let bidValue = 0;
+
+
+    // Il bot aggiunge carte finché
+    // raggiunge il valore dell'offerta migliore
+    for (const card of moneyCards) {
+
+        if (
+            bidValue >= bestMarketValue
+        ) {
+
+            break;
+
+        }
+
+
+        bid.push(card);
+
+        bidValue += card.value;
+
+    }
+
+
+    // Cerca di non offrire carte inutili
+    while (
+        bid.length > 1 &&
+        bidValue -
+            bid[bid.length - 1].value
+            >= bestMarketValue
+    ) {
+
+        const removed =
+            bid.pop();
+
+        bidValue -=
+            removed.value;
+
+    }
+
+
+    // Sicurezza: se non ha carte,
+    // usa la Play Money
+    if (bid.length === 0) {
+
+        const playMoney =
+            cards.find(
+                card =>
+                    card.type === "play-money"
+            );
+
+        if (playMoney) {
+
+            bid.push(
+                playMoney
+            );
+
+        }
+
+    }
+
+
+    return bid;
+
+}
+
+
+// ==========================================
+// I BOT FORMULANO LE OFFERTE
+// ==========================================
+
+function makeBotBids() {
+
+    for (
+        let i = 1;
+        i < game.players.length;
+        i++
+    ) {
+
+        const bot =
+            game.players[i];
+
+
+        bot.bid =
+            chooseBotBid(bot);
+
+
+        bot.bidConfirmed =
+            true;
+
+
+        console.log(
+            `${bot.name} ha offerto:`,
+            bot.bid,
+            "Valore:",
+            calculateBidValue(
+                bot.bid
+            )
+        );
+
+    }
+
+
+    console.log(
+        "Offerte di tutti i giocatori:",
+        game.players.map(
+            player => ({
+                name: player.name,
+
+                bid: player.bid,
+
+                value:
+                    calculateBidValue(
+                        player.bid
+                    )
+
+            })
+        )
+    );
+
+}
+
+
+// ==========================================
 // CONFERMA OFFERTA DEL GIOCATORE
 // ==========================================
 
@@ -487,13 +685,16 @@ function confirmBid() {
 
 
     // Nessuna carta selezionata
-    if (player.selectedCards.length === 0) {
+    if (
+        player.selectedCards.length === 0
+    ) {
 
         alert(
             "Seleziona almeno una carta."
         );
 
         return;
+
     }
 
 
@@ -508,7 +709,8 @@ function confirmBid() {
 
 
     // Blocca l'offerta
-    player.bidConfirmed = true;
+    player.bidConfirmed =
+        true;
 
 
     console.log(
@@ -553,7 +755,9 @@ function confirmBid() {
     // ======================================
 
     const message =
-        document.querySelector(".message");
+        document.querySelector(
+            ".message"
+        );
 
     message.firstChild.textContent =
         "Offerta confermata. I bot stanno giocando...";
@@ -562,6 +766,13 @@ function confirmBid() {
     console.log(
         "Il giocatore ha confermato l'offerta."
     );
+
+
+    // ======================================
+    // I BOT FORMULANO LE LORO OFFERTE
+    // ======================================
+
+    makeBotBids();
 
 }
 
