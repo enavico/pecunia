@@ -34,7 +34,6 @@ function createDeck() {
 
     let cardId = 1;
 
-
     // Banconote
     for (const currency of CURRENCIES) {
 
@@ -51,7 +50,6 @@ function createDeck() {
 
     }
 
-
     // Monete
     for (let i = 0; i < 6; i++) {
 
@@ -63,7 +61,6 @@ function createDeck() {
         });
 
     }
-
 
     return deck;
 }
@@ -182,7 +179,6 @@ function setupGame(numberOfPlayers = 4) {
 
     for (const player of game.players) {
 
-        // 6 carte dal mazzo
         for (let i = 0; i < 6; i++) {
 
             player.hand.push(
@@ -197,9 +193,6 @@ function setupGame(numberOfPlayers = 4) {
     // ======================================
     // PLAY MONEY
     // ======================================
-
-    // Ogni giocatore riceve una Play Money.
-    // Vale 0 e non viene pescata dal mazzo.
 
     for (const player of game.players) {
 
@@ -234,7 +227,6 @@ function setupGame(numberOfPlayers = 4) {
 
     }
 
-
     return game;
 }
 
@@ -245,9 +237,7 @@ function setupGame(numberOfPlayers = 4) {
 
 setupGame(4);
 
-console.log(
-    "Partita creata:"
-);
+console.log("Partita creata:");
 
 console.log(game);
 
@@ -309,21 +299,14 @@ function renderPlayers() {
                     card.value;
 
 
-                // Se l'offerta è già confermata,
-                // mantieni la carta evidenziata
-                if (player.bidConfirmed) {
+                if (
+                    player.bidConfirmed &&
+                    player.selectedCards.includes(card.id)
+                ) {
 
-                    if (
-                        player.selectedCards.includes(
-                            card.id
-                        )
-                    ) {
-
-                        cardElement.classList.add(
-                            "selected"
-                        );
-
-                    }
+                    cardElement.classList.add(
+                        "selected"
+                    );
 
                 }
 
@@ -332,8 +315,6 @@ function renderPlayers() {
                     "click",
                     function () {
 
-                        // Dopo la conferma
-                        // la mano non è più modificabile
                         if (player.bidConfirmed) {
 
                             return;
@@ -387,8 +368,33 @@ function renderPlayers() {
                 // MANO DEI BOT
                 // ==================================
 
-                cardElement.textContent =
-                    "?";
+                // Prima della conferma:
+                // carte nascoste.
+
+                // Dopo la conferma:
+                // carte dell'offerta visibili.
+
+                if (
+                    player.bidConfirmed &&
+                    player.bid.some(
+                        bidCard =>
+                            bidCard.id === card.id
+                    )
+                ) {
+
+                    cardElement.textContent =
+                        card.value;
+
+                    cardElement.classList.add(
+                        "selected"
+                    );
+
+                } else {
+
+                    cardElement.textContent =
+                        "?";
+
+                }
 
             }
 
@@ -417,7 +423,7 @@ function renderPlayers() {
 }
 
 
-// Disegna la partita appena creata
+// Disegna la partita
 renderPlayers();
 
 
@@ -518,7 +524,6 @@ function chooseBotBid(player) {
         [...player.hand];
 
 
-    // Valore delle due offerte
     const leftValue =
         calculateBidValue(
             game.market.left
@@ -536,7 +541,6 @@ function chooseBotBid(player) {
         );
 
 
-    // Carte utilizzabili per l'offerta
     const moneyCards =
         cards
             .filter(
@@ -555,8 +559,6 @@ function chooseBotBid(player) {
     let bidValue = 0;
 
 
-    // Il bot aggiunge carte finché
-    // raggiunge il valore dell'offerta migliore
     for (const card of moneyCards) {
 
         if (
@@ -567,7 +569,6 @@ function chooseBotBid(player) {
 
         }
 
-
         bid.push(card);
 
         bidValue += card.value;
@@ -575,7 +576,6 @@ function chooseBotBid(player) {
     }
 
 
-    // Cerca di non offrire carte inutili
     while (
         bid.length > 1 &&
         bidValue -
@@ -592,8 +592,6 @@ function chooseBotBid(player) {
     }
 
 
-    // Sicurezza: se non ha carte,
-    // usa la Play Money
     if (bid.length === 0) {
 
         const playMoney =
@@ -614,7 +612,6 @@ function chooseBotBid(player) {
 
 
     return bid;
-
 }
 
 
@@ -644,14 +641,15 @@ function makeBotBids() {
 
         console.log(
             `${bot.name} ha offerto:`,
-            bot.bid,
-            "Valore:",
-            calculateBidValue(
-                bot.bid
-            )
+            bot.bid
         );
 
     }
+
+
+    // Aggiorna la visualizzazione
+    // per mostrare le carte offerte dai bot
+    renderPlayers();
 
 
     console.log(
@@ -720,7 +718,7 @@ function confirmBid() {
 
 
     // ======================================
-    // VISUALIZZA L'OFFERTA
+    // VISUALIZZA L'OFFERTA DEL GIOCATORE
     // ======================================
 
     const bidContainer =
@@ -758,6 +756,7 @@ function confirmBid() {
         document.querySelector(
             ".message"
         );
+
 
     message.firstChild.textContent =
         "Offerta confermata. I bot stanno giocando...";
