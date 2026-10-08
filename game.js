@@ -4218,9 +4218,7 @@ function renderPlayers() {
             "players"
         );
 
-
     container.innerHTML = "";
-
 
     for (const player of game.players) {
 
@@ -4229,10 +4227,8 @@ function renderPlayers() {
                 "div"
             );
 
-
         playerElement.className =
             "player";
-
 
         if (
             game.currentPlayerId ===
@@ -4245,7 +4241,6 @@ function renderPlayers() {
 
         }
 
-
         // ----------------------------------
         // NOME
         // ----------------------------------
@@ -4255,14 +4250,11 @@ function renderPlayers() {
                 "div"
             );
 
-
         name.className =
             "player-name";
 
-
         name.textContent =
             player.name;
-
 
         // ----------------------------------
         // STATUS
@@ -4273,10 +4265,8 @@ function renderPlayers() {
                 "div"
             );
 
-
         status.className =
             "player-status";
-
 
         if (
             game.phase === "bidding"
@@ -4314,16 +4304,13 @@ function renderPlayers() {
 
         }
 
-
         playerElement.appendChild(
             name
         );
 
-
         playerElement.appendChild(
             status
         );
-
 
         // ----------------------------------
         // MANO
@@ -4334,14 +4321,11 @@ function renderPlayers() {
                 "div"
             );
 
-
         cards.className =
             "cards";
 
-
         const isHuman =
             player.id === 1;
-
 
         for (const card of player.hand) {
 
@@ -4351,16 +4335,19 @@ function renderPlayers() {
                     card.id
                 );
 
-
+            /*
+             * Le carte dei bot restano coperte
+             * durante la partita, ma vengono
+             * rivelate quando la partita è finita.
+             */
             const hidden =
-                !isHuman;
-
+                !isHuman &&
+                !game.gameOver;
 
             const cardElement =
                 createCardElement(
                     card,
                     {
-
                         clickable:
                             isHuman &&
                             game.phase === "bidding" &&
@@ -4371,10 +4358,8 @@ function renderPlayers() {
 
                         hidden:
                             hidden
-
                     }
                 );
-
 
             if (
                 isHuman &&
@@ -4396,18 +4381,15 @@ function renderPlayers() {
 
             }
 
-
             cards.appendChild(
                 cardElement
             );
 
         }
 
-
         playerElement.appendChild(
             cards
         );
-
 
         // ----------------------------------
         // OFFERTA BOT / GIOCATORE
@@ -4423,33 +4405,26 @@ function renderPlayers() {
                     "div"
                 );
 
-
             bidLabel.className =
                 "player-status";
-
 
             bidLabel.style.marginTop =
                 "10px";
 
-
             bidLabel.textContent =
                 `Offerta giocata (${player.bidValue})`;
-
 
             playerElement.appendChild(
                 bidLabel
             );
-
 
             const bidCards =
                 document.createElement(
                     "div"
                 );
 
-
             bidCards.className =
                 "cards";
-
 
             for (const card of player.bid) {
 
@@ -4461,13 +4436,11 @@ function renderPlayers() {
 
             }
 
-
             playerElement.appendChild(
                 bidCards
             );
 
         }
-
 
         // ----------------------------------
         // INFO
@@ -4478,10 +4451,8 @@ function renderPlayers() {
                 "div"
             );
 
-
         score.className =
             "player-score";
-
 
         if (
             game.gameOver
@@ -4497,11 +4468,9 @@ function renderPlayers() {
 
         }
 
-
         playerElement.appendChild(
             score
         );
-
 
         container.appendChild(
             playerElement
@@ -4510,7 +4479,6 @@ function renderPlayers() {
     }
 
 }
-
 
 // ==========================================
 // RENDER MANO UMANA
@@ -5408,25 +5376,19 @@ function returnBluffCardsToOwners() {
 
 function finishRound() {
 
-    game.phase =
-        "round-end";
+    game.phase = "round-end";
 
-
-    game.currentPlayerId =
-        null;
-
+    game.currentPlayerId = null;
 
     addLog(
         `Terminata la manche ${game.round}.`
     );
-
 
     // --------------------------------------
     // IL BLUFF TORNA SEMPRE AL PROPRIETARIO
     // --------------------------------------
 
     returnBluffCardsToOwners();
-
 
     // --------------------------------------
     // RESET OFFERTE
@@ -5446,53 +5408,15 @@ function finishRound() {
 
     }
 
-
     // --------------------------------------
-    // RIFORNIMENTO
-    // PRIMA B, POI A
+    // SE ERA LA MANCHE FINALE, FINE PARTITA
     // --------------------------------------
 
-    const oldDeckSize =
-        game.deck.length;
-
-
-    replenishMarket(
-        "right"
-    );
-
-
-    replenishMarket(
-        "left"
-    );
-
-
-    if (
-        oldDeckSize !==
-        game.deck.length
-    ) {
+    if (game.finalRound) {
 
         addLog(
-            `Il mercato viene rifornito. Rimangono ${game.deck.length} carte nel mazzo.`
+            "Terminata la manche finale. Si procede al conteggio finale."
         );
-
-    }
-
-
-    // --------------------------------------
-    // FINE DEL MAZZO
-    // --------------------------------------
-
-    if (
-        game.deck.length === 0
-    ) {
-
-        game.finalRound = true;
-
-
-        addLog(
-            "Il mazzo è esaurito. Si procede al conteggio finale."
-        );
-
 
         finishGame();
 
@@ -5500,29 +5424,66 @@ function finishRound() {
 
     }
 
+    // --------------------------------------
+    // RIFORNIMENTO
+    // PRIMA B, POI A
+    // --------------------------------------
+
+    replenishMarket("right");
+
+    replenishMarket("left");
 
     // --------------------------------------
-    // NUOVA MANO
+    // MAZZO ESAURITO: PROSSIMA MANCHE FINALE
+    // --------------------------------------
+
+    if (game.deck.length === 0) {
+
+        game.finalRound = true;
+
+        addLog(
+            "Il mazzo è esaurito. La prossima manche sarà l'ultima."
+        );
+
+    } else {
+
+        addLog(
+            `Il mercato viene rifornito. Rimangono ${game.deck.length} carte nel mazzo.`
+        );
+
+    }
+
+    // --------------------------------------
+    // NUOVA MANCHE
     // --------------------------------------
 
     game.round++;
 
-    game.phase =
-        "bidding";
-
+    game.phase = "bidding";
 
     updateTable();
 
+    if (game.finalRound) {
 
-    setMessage(
-        `Manche ${game.round}: scegli le carte da offrire.`
-    );
+        setMessage(
+            `Manche finale ${game.round}: scegli le carte da offrire.`
+        );
 
+        addLog(
+            `Inizia la manche finale ${game.round}.`
+        );
 
-    addLog(
-        `Inizia la manche ${game.round}.`
-    );
+    } else {
 
+        setMessage(
+            `Manche ${game.round}: scegli le carte da offrire.`
+        );
+
+        addLog(
+            `Inizia la manche ${game.round}.`
+        );
+
+    }
 
     showBidButton();
 
