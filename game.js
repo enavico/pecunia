@@ -414,6 +414,26 @@ function confirmBid() {
         "Offerta del giocatore:",
         player.bid
     );
+    const bidContainer =
+    document.getElementById("player-bid");
+
+bidContainer.innerHTML = "";
+
+
+for (const card of player.bid) {
+
+    const cardElement =
+        document.createElement("div");
+
+    cardElement.className = "card";
+
+    cardElement.textContent =
+        card.value;
+
+    bidContainer.appendChild(
+        cardElement
+    );
+}
 }
 
 
