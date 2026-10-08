@@ -300,3 +300,56 @@ function renderPlayers() {
 
 // Disegna la partita appena creata
 renderPlayers();
+
+// ==========================================
+// VISUALIZZAZIONE DELLE OFFERTE
+// ==========================================
+
+function renderMarket() {
+
+    const leftMarket =
+        document.getElementById("market-left");
+
+    const rightMarket =
+        document.getElementById("market-right");
+
+
+    leftMarket.innerHTML = "";
+    rightMarket.innerHTML = "";
+
+
+    for (const card of game.market.left) {
+
+        const cardElement =
+            document.createElement("div");
+
+        cardElement.className = "card";
+
+        cardElement.textContent =
+            card.value;
+
+        leftMarket.appendChild(
+            cardElement
+        );
+    }
+
+
+    for (const card of game.market.right) {
+
+        const cardElement =
+            document.createElement("div");
+
+        cardElement.className = "card";
+
+        cardElement.textContent =
+            card.value;
+
+        rightMarket.appendChild(
+            cardElement
+        );
+    }
+}
+
+
+// Disegna le offerte
+renderMarket();
