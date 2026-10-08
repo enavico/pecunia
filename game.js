@@ -223,3 +223,80 @@ setupGame(4);
 
 console.log("Partita creata:");
 console.log(game);
+// ==========================================
+// VISUALIZZAZIONE DEI GIOCATORI
+// ==========================================
+
+function renderPlayers() {
+
+    const playersContainer =
+        document.getElementById("players");
+
+    playersContainer.innerHTML = "";
+
+
+    for (const player of game.players) {
+
+        const playerElement =
+            document.createElement("div");
+
+        playerElement.className = "player";
+
+
+        const nameElement =
+            document.createElement("div");
+
+        nameElement.className = "player-name";
+
+        nameElement.textContent =
+            player.name;
+
+
+        const cardsElement =
+            document.createElement("div");
+
+        cardsElement.className = "cards";
+
+
+        for (const card of player.hand) {
+
+            const cardElement =
+                document.createElement("div");
+
+            cardElement.className = "card";
+
+            if (player.id === 1) {
+
+                cardElement.textContent =
+                    card.value;
+
+            } else {
+
+                cardElement.textContent =
+                    "?";
+
+            }
+
+            cardsElement.appendChild(
+                cardElement
+            );
+        }
+
+
+        playerElement.appendChild(
+            nameElement
+        );
+
+        playerElement.appendChild(
+            cardsElement
+        );
+
+        playersContainer.appendChild(
+            playerElement
+        );
+    }
+}
+
+
+// Disegna la partita appena creata
+renderPlayers();
