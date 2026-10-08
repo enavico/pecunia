@@ -64,6 +64,259 @@ const game = {
 
 
 // ==========================================
+// PROFILI BOT
+// ==========================================
+//
+// Ogni partita assegna casualmente questi
+// profili ai tre bot.
+//
+// TRIS:
+// privilegia fortemente i tris di 20/30.
+//
+// SET:
+// privilegia soprattutto il raggiungimento
+// di 200+ in una valuta.
+//
+// HYBRID:
+// comportamento intermedio, ma leggermente
+// più aggressivo e opportunista.
+//
+// I valori vengono leggermente variati
+// quando il profilo viene assegnato, così
+// anche due partite con lo stesso profilo
+// non producono necessariamente lo stesso
+// comportamento.
+//
+
+const BOT_PROFILES = {
+
+    TRIS: {
+
+        label: "cacciatore di tris",
+
+        aggression: 1.12,
+
+        triple20Weight: 1.30,
+
+        triple30Weight: 1.38,
+
+        set200Weight: 0.82,
+
+        near200Weight: 0.88,
+
+        lotWeight: 1.08,
+
+        sacrificeWeight: 0.82,
+
+        multiCardWeight: 1.12,
+
+        bluffWeight: 1.05
+
+    },
+
+
+    SET: {
+
+        label: "cacciatore di set",
+
+        aggression: 1.10,
+
+        triple20Weight: 0.82,
+
+        triple30Weight: 0.86,
+
+        set200Weight: 1.35,
+
+        near200Weight: 1.28,
+
+        lotWeight: 1.10,
+
+        sacrificeWeight: 0.80,
+
+        multiCardWeight: 1.10,
+
+        bluffWeight: 1.00
+
+    },
+
+
+    HYBRID: {
+
+        label: "opportunista",
+
+        aggression: 1.18,
+
+        triple20Weight: 1.00,
+
+        triple30Weight: 1.08,
+
+        set200Weight: 1.08,
+
+        near200Weight: 1.04,
+
+        lotWeight: 1.18,
+
+        sacrificeWeight: 0.74,
+
+        multiCardWeight: 1.18,
+
+        bluffWeight: 1.12
+
+    }
+
+};
+
+
+// ==========================================
+// CREAZIONE PROFILO BOT
+// ==========================================
+
+function createRandomBotProfile(
+    profileType
+) {
+
+    const base =
+        BOT_PROFILES[
+            profileType
+        ];
+
+
+    /*
+     * Variazioni leggere.
+     *
+     * Il profilo resta riconoscibile,
+     * ma non identico da partita a partita.
+     */
+
+    const variation =
+        () =>
+            0.90 +
+            Math.random() * 0.20;
+
+
+    return {
+
+        type:
+            profileType,
+
+        label:
+            base.label,
+
+        aggression:
+            base.aggression *
+            variation(),
+
+        triple20Weight:
+            base.triple20Weight *
+            variation(),
+
+        triple30Weight:
+            base.triple30Weight *
+            variation(),
+
+        set200Weight:
+            base.set200Weight *
+            variation(),
+
+        near200Weight:
+            base.near200Weight *
+            variation(),
+
+        lotWeight:
+            base.lotWeight *
+            variation(),
+
+        sacrificeWeight:
+            base.sacrificeWeight *
+            variation(),
+
+        multiCardWeight:
+            base.multiCardWeight *
+            variation(),
+
+        bluffWeight:
+            base.bluffWeight *
+            variation(),
+
+        /*
+         * Piccola inclinazione personale verso
+         * le offerte più lunghe.
+         */
+
+        bidVariance:
+            Math.random() * 0.25
+
+    };
+
+}
+
+
+// ==========================================
+// ASSEGNAZIONE CASUALE PROFILI BOT
+// ==========================================
+
+function assignBotProfiles(
+    players
+) {
+
+    const types = [
+
+        "TRIS",
+        "SET",
+        "HYBRID"
+
+    ];
+
+
+    // Fisher-Yates
+
+    for (
+        let i = types.length - 1;
+        i > 0;
+        i--
+    ) {
+
+        const j =
+            Math.floor(
+                Math.random() *
+                (i + 1)
+            );
+
+
+        [
+            types[i],
+            types[j]
+        ] = [
+            types[j],
+            types[i]
+        ];
+
+    }
+
+
+    /*
+     * Il giocatore 1 è umano.
+     * I bot 2, 3 e 4 ricevono i tre
+     * profili in ordine casuale.
+     */
+
+    for (
+        let i = 1;
+        i < players.length;
+        i++
+    ) {
+
+        players[i].botProfile =
+            createRandomBotProfile(
+                types[i - 1]
+            );
+
+    }
+
+}
+
+
+// ==========================================
 // CREAZIONE DEL MAZZO
 // ==========================================
 
@@ -192,11 +445,23 @@ function createPlayers() {
 
             resolved: false,
 
-            score: 0
+            score: 0,
+
+            botProfile: null
 
         });
 
     }
+
+
+    /*
+     * Assegna i tre profili casualmente
+     * a Bot 1, Bot 2 e Bot 3.
+     */
+
+    assignBotProfiles(
+        players
+    );
 
 
     return players;
@@ -372,6 +637,27 @@ function setupGame() {
 
     game.players =
         createPlayers();
+
+
+    // --------------------------------------
+    // LOG PROFILI BOT
+    // --------------------------------------
+
+    for (
+        let i = 1;
+        i < game.players.length;
+        i++
+    ) {
+
+        const bot =
+            game.players[i];
+
+
+        addLog(
+            `${bot.name}: profilo ${bot.botProfile.label}.`
+        );
+
+    }
 
 
     // --------------------------------------
@@ -1354,6 +1640,9 @@ function getBotTargets(
 
     const targets = [];
 
+    const profile =
+        player.botProfile;
+
 
     for (const currency of CURRENCIES) {
 
@@ -1386,6 +1675,10 @@ function getBotTargets(
             ).length;
 
 
+        // ----------------------------------
+        // TRIS DI 20
+        // ----------------------------------
+
         if (
             twenties === 2
         ) {
@@ -1398,12 +1691,17 @@ function getBotTargets(
                     currency,
 
                 priority:
-                    1000
+                    1000 *
+                    profile.triple20Weight
 
             });
 
         }
 
+
+        // ----------------------------------
+        // TRIS DI 30
+        // ----------------------------------
 
         if (
             thirties === 2
@@ -1417,12 +1715,17 @@ function getBotTargets(
                     currency,
 
                 priority:
-                    1050
+                    1050 *
+                    profile.triple30Weight
 
             });
 
         }
 
+
+        // ----------------------------------
+        // OBIETTIVO 200
+        // ----------------------------------
 
         if (
             value >= 160 &&
@@ -1437,8 +1740,44 @@ function getBotTargets(
                     currency,
 
                 priority:
-                    900 +
-                    (value - 160) * 3
+                    (
+                        900 +
+                        (value - 160) * 3
+                    ) *
+                    profile.near200Weight
+
+            });
+
+        }
+
+
+        // ----------------------------------
+        // SET GIÀ COMPLETO
+        // ----------------------------------
+
+        if (
+            value >= 200
+        ) {
+
+            /*
+             * Una valuta già arrivata a 200
+             * non viene ignorata: può ancora
+             * essere utile per migliorare il
+             * punteggio, ma perde priorità
+             * rispetto a un obiettivo ancora
+             * incompleto.
+             */
+
+            targets.push({
+
+                type: "maintain200",
+
+                currency:
+                    currency,
+
+                priority:
+                    620 *
+                    profile.set200Weight
 
             });
 
@@ -1476,6 +1815,10 @@ function chooseBotBid(
         );
 
 
+    const profile =
+        player.botProfile;
+
+
     let bestBid =
         null;
 
@@ -1494,12 +1837,6 @@ function chooseBotBid(
             bid[0].type === "play-money"
         ) {
 
-            /*
-             * Il Bluff da solo è legalmente
-             * possibile, ma per il bot deve essere
-             * una scelta rara.
-             */
-
             let score = -80;
 
 
@@ -1512,8 +1849,17 @@ function chooseBotBid(
             }
 
 
+            /*
+             * Il bluff solitario rimane raro,
+             * ma un bot molto aggressivo può
+             * occasionalmente sceglierlo.
+             */
+
             score +=
-                Math.random() * 8;
+                (
+                    Math.random() * 8
+                ) *
+                profile.bluffWeight;
 
 
             if (
@@ -1580,7 +1926,8 @@ function chooseBotBid(
 
 
         let score =
-            bestMarketGain;
+            bestMarketGain *
+            profile.lotWeight;
 
 
         // ----------------------------------
@@ -1613,13 +1960,17 @@ function chooseBotBid(
                     ) {
 
                         /*
-                         * Protegge le carte che servono
-                         * al tris, ma non in modo assoluto:
-                         * se il lotto è molto importante,
-                         * il bot può comunque sacrificarle.
+                         * Il bot TRIS sacrifica
+                         * queste carte con molta
+                         * più difficoltà.
+                         *
+                         * Il bot SET, invece,
+                         * può farlo più facilmente.
                          */
 
-                        score -= 190;
+                        score -=
+                            190 *
+                            profile.triple20Weight;
 
                     }
 
@@ -1645,7 +1996,9 @@ function chooseBotBid(
                         card.value === 30
                     ) {
 
-                        score -= 210;
+                        score -=
+                            210 *
+                            profile.triple30Weight;
 
                     }
 
@@ -1689,15 +2042,38 @@ function chooseBotBid(
                                 target.currency
                         ) {
 
-                            /*
-                             * Queste carte sono preziose,
-                             * ma possono comunque essere
-                             * sacrificate per un lotto enorme.
-                             */
-
-                            score -= 150;
+                            score -=
+                                150 *
+                                profile.near200Weight;
 
                         }
+
+                    }
+
+                }
+
+            }
+
+
+            // ------------------------------
+            // SET GIÀ COMPLETO
+            // ------------------------------
+
+            if (
+                target.type === "maintain200"
+            ) {
+
+                for (const card of bid) {
+
+                    if (
+                        card.type === "money" &&
+                        card.currency ===
+                            target.currency
+                    ) {
+
+                        score -=
+                            75 *
+                            profile.set200Weight;
 
                     }
 
@@ -1713,35 +2089,32 @@ function chooseBotBid(
         // ----------------------------------
 
         /*
-         * Prima era 0.45.
+         * Prima 0.25.
          *
-         * Abbassandolo a 0.25 il bot è molto
-         * più disposto a spendere carte per
-         * ottenere un lotto importante.
+         * Ora il costo viene modulato dal
+         * profilo.
+         *
+         * Un valore più basso significa:
+         * "sono disposto a pagare di più".
          */
 
         score -=
-            sacrificeCost * 0.25;
+            sacrificeCost *
+            0.25 *
+            profile.sacrificeWeight /
+            profile.aggression;
 
 
         // ----------------------------------
         // DIMENSIONE DELL'OFFERTA
         // ----------------------------------
 
-        /*
-         * Non vogliamo più che il bot consideri
-         * automaticamente una carta singola
-         * come la scelta migliore.
-         *
-         * Le offerte da 2-4 carte diventano
-         * normalmente più interessanti.
-         */
-
         if (
             bid.length === 1
         ) {
 
-            score -= 5;
+            score -=
+                5;
 
         }
 
@@ -1750,7 +2123,9 @@ function chooseBotBid(
             bid.length === 2
         ) {
 
-            score += 25;
+            score +=
+                25 *
+                profile.multiCardWeight;
 
         }
 
@@ -1759,7 +2134,9 @@ function chooseBotBid(
             bid.length === 3
         ) {
 
-            score += 35;
+            score +=
+                35 *
+                profile.multiCardWeight;
 
         }
 
@@ -1768,7 +2145,9 @@ function chooseBotBid(
             bid.length === 4
         ) {
 
-            score += 18;
+            score +=
+                18 *
+                profile.multiCardWeight;
 
         }
 
@@ -1778,7 +2157,11 @@ function chooseBotBid(
         ) {
 
             score -=
-                (bid.length - 4) * 35;
+                (
+                    bid.length - 4
+                ) *
+                35 /
+                profile.aggression;
 
         }
 
@@ -1787,17 +2170,14 @@ function chooseBotBid(
         // VALORE DELL'OFFERTA
         // ----------------------------------
 
-        /*
-         * Il valore della propria offerta ora
-         * conta positivamente.
-         */
-
         if (
             bidValue >= 100 &&
             bidValue < 140
         ) {
 
-            score += 20;
+            score +=
+                20 *
+                profile.aggression;
 
         }
 
@@ -1807,7 +2187,9 @@ function chooseBotBid(
             bidValue < 180
         ) {
 
-            score += 35;
+            score +=
+                35 *
+                profile.aggression;
 
         }
 
@@ -1816,7 +2198,9 @@ function chooseBotBid(
             bidValue >= 180
         ) {
 
-            score += 45;
+            score +=
+                45 *
+                profile.aggression;
 
         }
 
@@ -1825,31 +2209,192 @@ function chooseBotBid(
         // PREMIO PER L'AGGRESSIVITÀ
         // ----------------------------------
 
-        /*
-         * Se il lotto è molto importante,
-         * vale la pena fare un'offerta più grande.
-         */
-
         if (
             bestMarketGain >= 300
         ) {
 
             score +=
-                bid.length * 22;
+                bid.length *
+                22 *
+                profile.aggression;
 
         } else if (
             bestMarketGain >= 200
         ) {
 
             score +=
-                bid.length * 15;
+                bid.length *
+                15 *
+                profile.aggression;
 
         } else if (
             bestMarketGain >= 100
         ) {
 
             score +=
-                bid.length * 8;
+                bid.length *
+                8 *
+                profile.aggression;
+
+        }
+
+
+        // ----------------------------------
+        // PREMIO SPECIFICO PER TRIS
+        // ----------------------------------
+
+        if (
+            targets.length > 0
+        ) {
+
+            const target =
+                targets[0];
+
+
+            if (
+                target.type === "triple20"
+            ) {
+
+                for (const card of game.market.left) {
+
+                    if (
+                        card.type === "money" &&
+                        card.currency === target.currency &&
+                        card.value === 20
+                    ) {
+
+                        score +=
+                            35 *
+                            profile.triple20Weight;
+
+                    }
+
+                }
+
+
+                for (const card of game.market.right) {
+
+                    if (
+                        card.type === "money" &&
+                        card.currency === target.currency &&
+                        card.value === 20
+                    ) {
+
+                        score +=
+                            35 *
+                            profile.triple20Weight;
+
+                    }
+
+                }
+
+            }
+
+
+            if (
+                target.type === "triple30"
+            ) {
+
+                for (const card of game.market.left) {
+
+                    if (
+                        card.type === "money" &&
+                        card.currency === target.currency &&
+                        card.value === 30
+                    ) {
+
+                        score +=
+                            40 *
+                            profile.triple30Weight;
+
+                    }
+
+                }
+
+
+                for (const card of game.market.right) {
+
+                    if (
+                        card.type === "money" &&
+                        card.currency === target.currency &&
+                        card.value === 30
+                    ) {
+
+                        score +=
+                            40 *
+                            profile.triple30Weight;
+
+                    }
+
+                }
+
+            }
+
+        }
+
+
+        // ----------------------------------
+        // PREMIO SPECIFICO PER 200
+        // ----------------------------------
+
+        if (
+            targets.length > 0
+        ) {
+
+            const target =
+                targets[0];
+
+
+            if (
+                target.type === "reach200"
+            ) {
+
+                const targetValue =
+                    getCurrencyValue(
+                        player,
+                        target.currency
+                    );
+
+
+                const missing =
+                    200 -
+                    targetValue;
+
+
+                /*
+                 * Se il mercato contiene una carta
+                 * che chiude il 200, il bot SET la
+                 * considera particolarmente
+                 * appetibile.
+                 */
+
+                const markets = [
+                    game.market.left,
+                    game.market.right
+                ];
+
+
+                for (const market of markets) {
+
+                    for (const card of market) {
+
+                        if (
+                            card.type === "money" &&
+                            card.currency === target.currency &&
+                            card.value >= missing
+                        ) {
+
+                            score +=
+                                45 *
+                                profile.set200Weight;
+
+                        }
+
+                    }
+
+                }
+
+            }
 
         }
 
@@ -1858,16 +2403,6 @@ function chooseBotBid(
         // BLUFF
         // ----------------------------------
 
-        /*
-         * Il Bluff non aumenta il valore
-         * monetario dell'offerta, ma aumenta
-         * il numero di carte giocate.
-         *
-         * Lo premiamo leggermente perché può
-         * rendere più aggressiva la scelta
-         * senza costare valore monetario.
-         */
-
         if (
             bid.some(
                 card =>
@@ -1875,17 +2410,47 @@ function chooseBotBid(
             )
         ) {
 
-            score += 18;
+            score +=
+                18 *
+                profile.bluffWeight;
 
         }
 
 
         // ----------------------------------
-        // PICCOLA VARIABILITÀ
+        // VARIABILITÀ
         // ----------------------------------
 
+        /*
+         * Non abbastanza alta da distruggere
+         * la strategia, ma sufficiente a evitare
+         * partite completamente deterministiche.
+         */
+
         score +=
-            Math.random() * 12;
+            Math.random() *
+            (
+                12 +
+                profile.bidVariance * 10
+            );
+
+
+        // ----------------------------------
+        // PICCOLA TENDENZA ALL'AGGRESSIVITÀ
+        // ----------------------------------
+
+        /*
+         * A parità quasi perfetta, l'offerta
+         * più grande ha un piccolo vantaggio
+         * per i bot aggressivi.
+         */
+
+        score +=
+            bid.length *
+            (
+                profile.aggression - 1
+            ) *
+            8;
 
 
         if (
@@ -2017,6 +2582,10 @@ function chooseBotAction(
     player
 ) {
 
+    const profile =
+        player.botProfile;
+
+
     // --------------------------------------
     // BLUFF DA SOLO
     // --------------------------------------
@@ -2055,7 +2624,8 @@ function chooseBotAction(
                     player,
                     game.market.left,
                     player.bid
-                )
+                ) *
+                profile.lotWeight
 
         });
 
@@ -2079,7 +2649,8 @@ function chooseBotAction(
                     player,
                     game.market.right,
                     player.bid
-                )
+                ) *
+                profile.lotWeight
 
         });
 
@@ -2152,7 +2723,9 @@ function chooseBotAction(
                 opponentCards.length >= 4
             ) {
 
-                targetValue += 50;
+                targetValue +=
+                    50 *
+                    profile.aggression;
 
             }
 
@@ -2161,7 +2734,9 @@ function chooseBotAction(
                 opponentCards.length >= 6
             ) {
 
-                targetValue += 80;
+                targetValue +=
+                    80 *
+                    profile.aggression;
 
             }
 
@@ -2176,7 +2751,8 @@ function chooseBotAction(
                 opponent.id,
 
             targetValue:
-                targetValue
+                targetValue *
+                profile.lotWeight
 
         });
 
@@ -2218,15 +2794,27 @@ function chooseBotAction(
     // --------------------------------------
 
     /*
-     * La soglia viene mantenuta relativamente
-     * bassa: i bot devono essere disposti
-     * a correre qualche rischio.
+     * Prima:
+     *
+     * best < bidCost * 0.40
+     *
+     * Ora la soglia dipende dal carattere.
+     *
+     * Bot aggressivi:
+     * accettano più facilmente scambi costosi.
      */
+
+    const acceptanceThreshold =
+        0.40 *
+        profile.sacrificeWeight /
+        profile.aggression;
+
 
     if (
         best.type !== "pass" &&
         best.targetValue <
-            bidCost * 0.40
+            bidCost *
+            acceptanceThreshold
     ) {
 
         return {
@@ -3022,13 +3610,6 @@ function confirmBid() {
             card =>
                 card.type ===
                 "play-money"
-        );
-
-
-    const realBidIds =
-        realBid.map(
-            card =>
-                card.id
         );
 
 
@@ -5346,4 +5927,21 @@ console.log(
         player =>
             player.hand.length
     )
+);
+
+console.log(
+    "Profili bot:",
+    game.players
+        .filter(
+            player =>
+                player.id !== 1
+        )
+        .map(
+            player => ({
+                bot:
+                    player.name,
+                profile:
+                    player.botProfile
+            })
+        )
 );
