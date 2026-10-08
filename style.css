@@ -139,3 +139,13 @@ button:hover {
     transform: translateY(-10px);
     box-shadow: 0 8px 12px rgba(0, 0, 0, 0.45);
 }
+
+#player-bid {
+    min-height: 100px;
+    margin-top: 15px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+}
