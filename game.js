@@ -265,17 +265,28 @@ function renderPlayers() {
 
             cardElement.className = "card";
 
-            if (player.id === 1) {
+if (player.id === 1) {
 
-                cardElement.textContent =
-                    card.value;
+    cardElement.textContent =
+        card.value;
 
-            } else {
+    cardElement.addEventListener(
+        "click",
+        function () {
 
-                cardElement.textContent =
-                    "?";
+            cardElement.classList.toggle(
+                "selected"
+            );
 
-            }
+        }
+    );
+
+} else {
+
+    cardElement.textContent =
+        "?";
+
+}
 
             cardsElement.appendChild(
                 cardElement
