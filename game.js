@@ -114,7 +114,6 @@ const BOT_PROFILES = {
 
     },
 
-
     SET: {
 
         label: "cacciatore di set",
@@ -139,7 +138,6 @@ const BOT_PROFILES = {
 
     },
 
-
     HYBRID: {
 
         label: "opportunista",
@@ -162,10 +160,33 @@ const BOT_PROFILES = {
 
         bluffWeight: 1.12
 
+    },
+
+    AGGRESSIVE: {
+
+        label: "opportunista aggressivo",
+
+        aggression: 1.38,
+
+        triple20Weight: 1.10,
+
+        triple30Weight: 1.18,
+
+        set200Weight: 1.18,
+
+        near200Weight: 1.14,
+
+        lotWeight: 1.30,
+
+        sacrificeWeight: 0.58,
+
+        multiCardWeight: 1.28,
+
+        bluffWeight: 1.18
+
     }
 
 };
-
 
 // ==========================================
 // CREAZIONE PROFILO BOT
@@ -255,44 +276,42 @@ function createRandomBotProfile(
 // ASSEGNAZIONE CASUALE PROFILI BOT
 // ==========================================
 
-function assignBotProfiles(
-    players
-) {
+function assignBotProfiles(players) {
 
-    const types = [
+    const profileTypes =
+        Object.keys(BOT_PROFILES);
 
-        "TRIS",
-        "SET",
-        "HYBRID"
-
-    ];
-
-
-    // Fisher-Yates
-
+    /*
+     * Ogni bot estrae un profilo
+     * indipendentemente dagli altri.
+     *
+     * Il profilo AGGRESSIVE può quindi
+     * non essere assegnato oppure comparire
+     * in più bot nella stessa partita.
+     */
     for (
-        let i = types.length - 1;
-        i > 0;
-        i--
+        let i = 1;
+        i < players.length;
+        i++
     ) {
 
-        const j =
+        const randomIndex =
             Math.floor(
                 Math.random() *
-                (i + 1)
+                profileTypes.length
             );
 
+        const profileType =
+            profileTypes[randomIndex];
 
-        [
-            types[i],
-            types[j]
-        ] = [
-            types[j],
-            types[i]
-        ];
+        players[i].botProfile =
+            createRandomBotProfile(
+                profileType
+            );
 
     }
 
+}
 
     /*
      * Il giocatore 1 è umano.
