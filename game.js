@@ -4312,85 +4312,50 @@ function renderPlayers() {
             status
         );
 
-        // ----------------------------------
-        // MANO
-        // ----------------------------------
+// ----------------------------------
+// MANO
+// ----------------------------------
 
-        const cards =
-            document.createElement(
-                "div"
-            );
+/*
+ * La mano del giocatore umano viene
+ * visualizzata esclusivamente da renderHand(),
+ * nel contenitore #player-hand.
+ *
+ * Qui vengono mostrate soltanto le mani dei bot.
+ */
 
-        cards.className =
-            "cards";
+if (player.id !== 1) {
 
-        const isHuman =
-            player.id === 1;
-
-        for (const card of player.hand) {
-
-            const selected =
-                isHuman &&
-                player.selectedCards.includes(
-                    card.id
-                );
-
-            /*
-             * Le carte dei bot restano coperte
-             * durante la partita, ma vengono
-             * rivelate quando la partita è finita.
-             */
-            const hidden =
-                !isHuman &&
-                !game.gameOver;
-
-            const cardElement =
-                createCardElement(
-                    card,
-                    {
-                        clickable:
-                            isHuman &&
-                            game.phase === "bidding" &&
-                            !player.bidConfirmed,
-
-                        selected:
-                            selected,
-
-                        hidden:
-                            hidden
-                    }
-                );
-
-            if (
-                isHuman &&
-                game.phase === "bidding" &&
-                !player.bidConfirmed
-            ) {
-
-                cardElement.addEventListener(
-                    "click",
-                    () => {
-
-                        toggleCardSelection(
-                            player,
-                            card
-                        );
-
-                    }
-                );
-
-            }
-
-            cards.appendChild(
-                cardElement
-            );
-
-        }
-
-        playerElement.appendChild(
-            cards
+    const cards =
+        document.createElement(
+            "div"
         );
 
+    cards.className =
+        "cards";
+
+    for (const card of player.hand) {
+
+        const cardElement =
+            createCardElement(
+                card,
+                {
+                    hidden:
+                        !game.gameOver
+                }
+            );
+
+        cards.appendChild(
+            cardElement
+        );
+
+    }
+
+    playerElement.appendChild(
+        cards
+    );
+
+}
         // ----------------------------------
         // OFFERTA BOT / GIOCATORE
         // ----------------------------------
