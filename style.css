@@ -734,7 +734,7 @@ button.primary {
     .players {
         grid-template-columns: repeat(2, 1fr);
     }
-
+ 
     .center {
         gap: 20px;
     }
