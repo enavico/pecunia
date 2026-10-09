@@ -4312,51 +4312,79 @@ function renderPlayers() {
             status
         );
 
-        // ----------------------------------
-        // MANO
-        // ----------------------------------
+      // ----------------------------------
+      // MANO
+      // ----------------------------------
 
-        /*
-         * La mano del giocatore umano viene
-         * mostrata solo nella sezione dedicata
-         * in basso, per evitare di vederla due volte.
-         */
-        if (player.id !== 1) {
+const cards =
+    document.createElement(
+        "div"
+    );
 
-            const cards =
-                document.createElement(
-                    "div"
-                );
+cards.className =
+    "cards";
 
-            cards.className =
-                "cards";
+const isHuman =
+    player.id === 1;
 
-            for (const card of player.hand) {
+for (const card of player.hand) {
 
-                const hidden =
-                    !game.gameOver;
+    const selected =
+        isHuman &&
+        player.selectedCards.includes(
+            card.id
+        );
 
-                const cardElement =
-                    createCardElement(
-                        card,
-                        {
-                            hidden:
-                                hidden
-                        }
-                    );
+    const hidden =
+        !isHuman &&
+        !game.gameOver;
 
-                cards.appendChild(
-                    cardElement
+    const cardElement =
+        createCardElement(
+            card,
+            {
+                clickable:
+                    isHuman &&
+                    game.phase === "bidding" &&
+                    !player.bidConfirmed,
+
+                selected:
+                    selected,
+
+                hidden:
+                    hidden
+            }
+        );
+
+    if (
+        isHuman &&
+        game.phase === "bidding" &&
+        !player.bidConfirmed
+    ) {
+
+        cardElement.addEventListener(
+            "click",
+            () => {
+
+                toggleCardSelection(
+                    player,
+                    card
                 );
 
             }
+        );
 
-            playerElement.appendChild(
-                cards
-            );
+    }
 
-        }
+    cards.appendChild(
+        cardElement
+    );
 
+}
+
+playerElement.appendChild(
+    cards
+);
         // ----------------------------------
         // OFFERTA BOT / GIOCATORE
         // ----------------------------------
@@ -5253,8 +5281,6 @@ function updateTable() {
 
     renderPlayers();
 
-    renderHand();
-
     renderMarket();
 
     renderPlayerBid();
@@ -5266,7 +5292,6 @@ function updateTable() {
     renderLogs();
 
 }
-
 
 // ==========================================
 // RESTITUZIONE BLUFF AI PROPRIETARI
