@@ -824,3 +824,26 @@ button.primary {
         max-height: 160px;
     }
 }
+
+.market-action {
+    margin-top: 10px;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 8px;
+    background: #ffd54a;
+    color: #222;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.market-action:hover {
+    background: #ffc107;
+}
+
+#market-left,
+#market-right {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
