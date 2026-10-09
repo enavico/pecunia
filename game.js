@@ -4211,6 +4211,66 @@ function createCardElement(
 // RENDER GIOCATORI
 // ==========================================
 
+function sortCardsForDisplay(cards) {
+
+    const currencyOrder =
+        new Map(
+            CURRENCIES.map(
+                (currency, index) => [
+                    currency,
+                    index
+                ]
+            )
+        );
+
+    return [...cards].sort(
+        (a, b) => {
+
+            const aIsMoney =
+                a.type === "money";
+
+            const bIsMoney =
+                b.type === "money";
+
+            // Le banconote vengono prima delle altre carte.
+            if (aIsMoney && !bIsMoney) {
+                return -1;
+            }
+
+            if (!aIsMoney && bIsMoney) {
+                return 1;
+            }
+
+            // Ordina le banconote secondo CURRENCIES,
+            // poi dal valore maggiore al minore.
+            if (aIsMoney && bIsMoney) {
+
+                const currencyDifference =
+                    currencyOrder.get(a.currency) -
+                    currencyOrder.get(b.currency);
+
+                if (currencyDifference !== 0) {
+                    return currencyDifference;
+                }
+
+                return b.value - a.value;
+            }
+
+            // Tra le altre carte, monete prima dei BLUFF.
+            const otherCardOrder = {
+                coin: 0,
+                "play-money": 1
+            };
+
+            return (
+                (otherCardOrder[a.type] ?? 2) -
+                (otherCardOrder[b.type] ?? 2)
+            );
+        }
+    );
+
+}
+
 function renderPlayers() {
 
     const container =
@@ -4343,8 +4403,7 @@ if (player.id !== 1) {
     cards.className =
         "cards";
 
-    for (const card of player.hand) {
-
+for (const card of sortCardsForDisplay(player.hand)) {
         const cardElement =
             createCardElement(
                 card,
@@ -4480,8 +4539,7 @@ function renderHand() {
         game.players[0];
 
 
-    for (const card of player.hand) {
-
+for (const card of sortCardsForDisplay(player.hand)) {
         const selected =
             player.selectedCards.includes(
                 card.id
