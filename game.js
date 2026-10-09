@@ -4220,12 +4220,21 @@ function renderPlayers() {
 
     container.innerHTML = "";
 
-    for (const player of game.players) {
+for (const player of game.players) {
 
-        const playerElement =
-            document.createElement(
-                "div"
-            );
+    /*
+     * Il giocatore umano viene mostrato
+     * soltanto nella sezione #player-hand.
+     * Non creare quindi il riquadro "Tu".
+     */
+    if (player.id === 1) {
+        continue;
+    }
+
+    const playerElement =
+        document.createElement(
+            "div"
+        );
 
         playerElement.className =
             "player";
