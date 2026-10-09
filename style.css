@@ -1067,3 +1067,132 @@ button.primary {
     }
 
 }
+/* ==========================================
+   LAYOUT MOBILE: CARTE ORIZZONTALI E A CAPO
+   Incollare in fondo a style.css
+   ========================================== */
+
+@media (max-width: 899px) {
+
+    /* --------------------------------------
+       Riquadri bot uno sotto l'altro
+       -------------------------------------- */
+
+    .players {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        width: 100%;
+    }
+
+    .players .player {
+        width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+    }
+
+    /* --------------------------------------
+       Carte dei bot:
+       da sinistra a destra e a capo
+       -------------------------------------- */
+
+    .players .cards {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: flex-start;
+        gap: 8px;
+        padding: 8px;
+        box-sizing: border-box;
+    }
+
+    .players .cards .card:not(.card-coin) {
+        width: 54px;
+        height: 76px;
+        flex: 0 0 54px;
+        box-sizing: border-box;
+    }
+
+    .players .cards .card.card-coin {
+        width: 54px;
+        height: 54px;
+        min-width: 54px;
+        min-height: 54px;
+        flex: 0 0 54px;
+        border-radius: 50%;
+        box-sizing: border-box;
+    }
+
+    /* --------------------------------------
+       Offerte A e B:
+       una sotto l'altra, carte orizzontali
+       -------------------------------------- */
+
+    .center {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+    }
+
+    .market {
+        width: 100%;
+        min-width: 0;
+    }
+
+    #market-left,
+    #market-right {
+        width: 100%;
+        min-height: 98px;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: flex-start;
+        gap: 8px;
+        padding: 8px;
+        box-sizing: border-box;
+    }
+
+    #market-left .card:not(.card-coin),
+    #market-right .card:not(.card-coin) {
+        width: 54px;
+        height: 76px;
+        flex: 0 0 54px;
+        box-sizing: border-box;
+    }
+
+    #market-left .card.card-coin,
+    #market-right .card.card-coin {
+        width: 54px;
+        height: 54px;
+        min-width: 54px;
+        min-height: 54px;
+        flex: 0 0 54px;
+        border-radius: 50%;
+        box-sizing: border-box;
+    }
+
+    /* --------------------------------------
+       Mazzo centrato, dopo le offerte
+       -------------------------------------- */
+
+    #deck-area {
+        align-self: center;
+        margin: 8px auto 0;
+    }
+
+    /* --------------------------------------
+       Mano, messaggi e azioni a piena larghezza
+       -------------------------------------- */
+
+    #hand,
+    .message,
+    .actions {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+}
