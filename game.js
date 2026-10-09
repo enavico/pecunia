@@ -106,9 +106,9 @@ const BOT_PROFILES = {
 
         lotWeight: 1.08,
 
-        sacrificeWeight: 0.82,
+        sacrificeWeight: 0.80,
 
-        multiCardWeight: 1.12,
+        multiCardWeight: 1.15,
 
         bluffWeight: 1.05
 
@@ -156,9 +156,9 @@ HYBRID: {
 
     lotWeight: 1.28,
 
-    sacrificeWeight: 0.62,
+    sacrificeWeight: 0.58,
 
-    multiCardWeight: 1.28,
+    multiCardWeight: 1.30,
 
     bluffWeight: 1.12
 
