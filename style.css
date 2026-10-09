@@ -1036,3 +1036,34 @@ button.primary {
     }
 
 }
+
+/* ==========================================
+   DIMENSIONI CARTE E MONETE
+   ========================================== */
+
+@media (min-width: 900px) {
+
+    /* Banconote dei bot */
+    .players .cards .card:not(.card-coin),
+    #market-left .card:not(.card-coin),
+    #market-right .card:not(.card-coin) {
+        width: 76px;
+        height: 108px;
+        flex: 0 0 76px;
+        box-sizing: border-box;
+    }
+
+    /* Monete circolari */
+    .players .cards .card.card-coin,
+    #market-left .card.card-coin,
+    #market-right .card.card-coin {
+        width: 76px !important;
+        height: 76px !important;
+        min-width: 76px;
+        min-height: 76px;
+        flex: 0 0 76px;
+        border-radius: 50%;
+        box-sizing: border-box;
+    }
+
+}
