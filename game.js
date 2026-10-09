@@ -104,7 +104,7 @@ const BOT_PROFILES = {
 
         near200Weight: 0.88,
 
-        lotWeight: 1.08,
+        lotWeight: 1.10,
 
         sacrificeWeight: 0.80,
 
@@ -154,7 +154,7 @@ HYBRID: {
 
     near200Weight: 1.04,
 
-    lotWeight: 1.28,
+    lotWeight: 1.30,
 
     sacrificeWeight: 0.58,
 
