@@ -1,7 +1,7 @@
 // ==========================================
 // DATI DEL GIOCO
 // ==========================================
- 
+
 const CURRENCIES = [
     "EURO",
     "DOLLAR",
@@ -4312,79 +4312,85 @@ function renderPlayers() {
             status
         );
 
-      // ----------------------------------
-      // MANO
-      // ----------------------------------
+        // ----------------------------------
+        // MANO
+        // ----------------------------------
 
-const cards =
-    document.createElement(
-        "div"
-    );
+        const cards =
+            document.createElement(
+                "div"
+            );
 
-cards.className =
-    "cards";
+        cards.className =
+            "cards";
 
-const isHuman =
-    player.id === 1;
+        const isHuman =
+            player.id === 1;
 
-for (const card of player.hand) {
+        for (const card of player.hand) {
 
-    const selected =
-        isHuman &&
-        player.selectedCards.includes(
-            card.id
-        );
+            const selected =
+                isHuman &&
+                player.selectedCards.includes(
+                    card.id
+                );
 
-    const hidden =
-        !isHuman &&
-        !game.gameOver;
+            /*
+             * Le carte dei bot restano coperte
+             * durante la partita, ma vengono
+             * rivelate quando la partita è finita.
+             */
+            const hidden =
+                !isHuman &&
+                !game.gameOver;
 
-    const cardElement =
-        createCardElement(
-            card,
-            {
-                clickable:
-                    isHuman &&
-                    game.phase === "bidding" &&
-                    !player.bidConfirmed,
+            const cardElement =
+                createCardElement(
+                    card,
+                    {
+                        clickable:
+                            isHuman &&
+                            game.phase === "bidding" &&
+                            !player.bidConfirmed,
 
-                selected:
-                    selected,
+                        selected:
+                            selected,
 
-                hidden:
-                    hidden
-            }
-        );
+                        hidden:
+                            hidden
+                    }
+                );
 
-    if (
-        isHuman &&
-        game.phase === "bidding" &&
-        !player.bidConfirmed
-    ) {
+            if (
+                isHuman &&
+                game.phase === "bidding" &&
+                !player.bidConfirmed
+            ) {
 
-        cardElement.addEventListener(
-            "click",
-            () => {
+                cardElement.addEventListener(
+                    "click",
+                    () => {
 
-                toggleCardSelection(
-                    player,
-                    card
+                        toggleCardSelection(
+                            player,
+                            card
+                        );
+
+                    }
                 );
 
             }
+
+            cards.appendChild(
+                cardElement
+            );
+
+        }
+
+        playerElement.appendChild(
+            cards
         );
 
-    }
-
-    cards.appendChild(
-        cardElement
-    );
-
-}
-
-playerElement.appendChild(
-    cards
-);
         // ----------------------------------
         // OFFERTA BOT / GIOCATORE
         // ----------------------------------
@@ -4433,57 +4439,6 @@ playerElement.appendChild(
             playerElement.appendChild(
                 bidCards
             );
-
-            // ------------------------------
-            // PULSANTE PER PRENDERE
-            // L'OFFERTA DI UN BOT
-            // ------------------------------
-
-            const currentPlayer =
-                game.players.find(
-                    player =>
-                        player.id ===
-                        game.currentPlayerId
-                );
-
-            const canSteal =
-                game.phase === "resolution" &&
-                currentPlayer &&
-                currentPlayer.id === 1 &&
-                currentPlayer.bid.length > 0 &&
-                player.id !== 1 &&
-                !player.resolved;
-
-            if (canSteal) {
-
-                const button =
-                    createActionButton(
-                        `Prendi offerta di ${player.name}`,
-                        () => {
-
-                            executeAction(
-                                currentPlayer,
-                                {
-                                    type:
-                                        "steal",
-
-                                    targetId:
-                                        player.id
-                                }
-                            );
-
-                        }
-                    );
-
-                button.classList.add(
-                    "market-action"
-                );
-
-                playerElement.appendChild(
-                    button
-                );
-
-            }
 
         }
 
@@ -4612,14 +4567,13 @@ function renderMarket() {
 
     renderMarketSide(
         "market-left",
-        game.market.left,
-        "left"
+        game.market.left
     );
+
 
     renderMarketSide(
         "market-right",
-        game.market.right,
-        "right"
+        game.market.right
     );
 
 }
@@ -4627,78 +4581,8 @@ function renderMarket() {
 
 function renderMarketSide(
     elementId,
-    cards,
-    side
+    cards
 ) {
-
-    const container =
-        document.getElementById(
-            elementId
-        );
-
-    container.innerHTML = "";
-
-    for (const card of cards) {
-
-        container.appendChild(
-            createCardElement(
-                card
-            )
-        );
-
-    }
-
-    // --------------------------------------
-    // PULSANTE PER ACCETTARE L'OFFERTA
-    // --------------------------------------
-
-    const currentPlayer =
-        game.players.find(
-            player =>
-                player.id ===
-                game.currentPlayerId
-        );
-
-    const canAccept =
-        game.phase === "resolution" &&
-        currentPlayer &&
-        currentPlayer.id === 1 &&
-        currentPlayer.bid.length > 0 &&
-        cards.length > 0;
-
-    if (canAccept) {
-
-        const button =
-            createActionButton(
-                side === "left"
-                    ? "Prendi offerta A"
-                    : "Prendi offerta B",
-                () => {
-
-                    executeAction(
-                        currentPlayer,
-                        {
-                            type:
-                                side === "left"
-                                    ? "left"
-                                    : "right"
-                        }
-                    );
-
-                }
-            );
-
-        button.classList.add(
-            "market-action"
-        );
-
-        container.appendChild(
-            button
-        );
-
-    }
-
-}
 
     const container =
         document.getElementById(
@@ -5281,6 +5165,8 @@ function updateTable() {
 
     renderPlayers();
 
+    renderHand();
+
     renderMarket();
 
     renderPlayerBid();
@@ -5292,6 +5178,7 @@ function updateTable() {
     renderLogs();
 
 }
+
 
 // ==========================================
 // RESTITUZIONE BLUFF AI PROPRIETARI
