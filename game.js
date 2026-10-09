@@ -140,29 +140,29 @@ const BOT_PROFILES = {
     },
 
 
-    HYBRID: {
+HYBRID: {
 
-        label: "opportunista",
+    label: "opportunista",
 
-        aggression: 1.18,
+    aggression: 1.35,
 
-        triple20Weight: 1.00,
+    triple20Weight: 1.00,
 
-        triple30Weight: 1.08,
+    triple30Weight: 1.08,
 
-        set200Weight: 1.08,
+    set200Weight: 1.08,
 
-        near200Weight: 1.04,
+    near200Weight: 1.04,
 
-        lotWeight: 1.18,
+    lotWeight: 1.28,
 
-        sacrificeWeight: 0.74,
+    sacrificeWeight: 0.62,
 
-        multiCardWeight: 1.18,
+    multiCardWeight: 1.28,
 
-        bluffWeight: 1.12
+    bluffWeight: 1.12
 
-    }
+}
 
 };
 
