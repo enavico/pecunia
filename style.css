@@ -1196,3 +1196,43 @@ button.primary {
     }
 
 }
+
+/* Menu iniziale scelta giocatori */
+
+.setup-menu {
+    width: min(92vw, 520px);
+    margin: 40px auto;
+    padding: 30px 24px;
+    text-align: center;
+    background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.06),
+        rgba(0, 0, 0, 0.24)
+    ), #315f3a;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 16px;
+    box-shadow:
+        0 18px 45px rgba(0, 0, 0, 0.40),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.setup-menu h2 {
+    margin: 0 0 10px;
+    font-family: Georgia, "Times New Roman", serif;
+}
+
+.setup-menu p {
+    margin: 0 0 18px;
+    color: var(--text-soft);
+}
+
+.setup-buttons {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+[hidden] {
+    display: none !important;
+}
