@@ -254,60 +254,38 @@ function createRandomBotProfile(
 // ASSEGNAZIONE CASUALE PROFILI BOT
 // ==========================================
 
-function assignBotProfiles(
-    players
-) {
+function assignBotProfiles(players) {
 
     const types = [
-
         "TRIS",
         "SET",
         "HYBRID"
-
     ];
 
-
-    // Fisher-Yates
-
-    for (
-        let i = types.length - 1;
-        i > 0;
-        i--
-    ) {
+    // Mescola l'ordine dei profili.
+    for (let i = types.length - 1; i > 0; i--) {
 
         const j =
             Math.floor(
-                Math.random() *
-                (i + 1)
+                Math.random() * (i + 1)
             );
 
-
-        [
-            types[i],
-            types[j]
-        ] = [
-            types[j],
-            types[i]
-        ];
+        [types[i], types[j]] =
+            [types[j], types[i]];
 
     }
 
+    // Assegna un profilo a ciascun bot.
+    // Se ci sono più di tre bot, riparte dall'inizio
+    // e un profilo può essere assegnato più volte.
+    for (let i = 1; i < players.length; i++) {
 
-    /*
-     * Il giocatore 1 è umano.
-     * I bot 2, 3 e 4 ricevono i tre
-     * profili in ordine casuale.
-     */
-
-    for (
-        let i = 1;
-        i < players.length;
-        i++
-    ) {
+        const profileIndex =
+            (i - 1) % types.length;
 
         players[i].botProfile =
             createRandomBotProfile(
-                types[i - 1]
+                types[profileIndex]
             );
 
     }
