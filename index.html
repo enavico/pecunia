@@ -23,8 +23,19 @@
     <div id="game-info"></div>
 </header>
 
-<main id="table">
+<section id="setup-menu" class="setup-menu">
+    <h2>Nuova partita</h2>
+    <p>Scegli il numero totale di giocatori, te compreso.</p>
 
+    <div class="setup-buttons">
+        <button type="button" data-player-count="3">3 giocatori</button>
+        <button type="button" data-player-count="4">4 giocatori</button>
+        <button type="button" data-player-count="5">5 giocatori</button>
+    </div>
+</section>
+
+<main id="table" hidden>
+    
     <section class="players" id="players">
     </section>
 
