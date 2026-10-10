@@ -5903,26 +5903,42 @@ function initializePlayerCountMenu() {
             "[data-player-count]"
         );
 
-    buttons.forEach(button => {
+    buttons.forEach(function (button) {
 
-        button.addEventListener(
-            "click",
-            () => {
+        button.onclick = function () {
 
-                const count =
-                    Number(
-                        button.dataset.playerCount
-                    );
+            const count =
+                Number(
+                    button.getAttribute(
+                        "data-player-count"
+                    )
+                );
 
-                startGameWithPlayerCount(count);
+            numberOfPlayers = count;
 
-            }
-        );
+            document.getElementById(
+                "setup-menu"
+            ).hidden = true;
+
+            document.getElementById(
+                "table"
+            ).hidden = false;
+
+            setupGame();
+
+            updateTable();
+
+            setMessage(
+                "Scegli le carte da utilizzare per la tua offerta."
+            );
+
+            showBidButton();
+
+        };
 
     });
 
 }
-
 
 // ==========================================
 // AVVIO
