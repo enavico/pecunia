@@ -24,8 +24,7 @@ const VALUES = [
     60
 ];
 
-const NUMBER_OF_PLAYERS = 4;
-
+let numberOfPlayers = 4;
 
 // ==========================================
 // STATO DELLA PARTITA
@@ -420,7 +419,7 @@ function createPlayers() {
 
     for (
         let i = 0;
-        i < NUMBER_OF_PLAYERS;
+        i < numberOfPlayers;
         i++
     ) {
 
@@ -5880,21 +5879,56 @@ function finishGame() {
 
 }
 
+function startGameWithPlayerCount(count) {
+
+    numberOfPlayers = count;
+
+    document.getElementById("setup-menu").hidden = true;
+    document.getElementById("table").hidden = false;
+
+    setupGame();
+    updateTable();
+
+    setMessage(
+        "Scegli le carte da utilizzare per la tua offerta."
+    );
+
+    showBidButton();
+}
+
+function initializePlayerCountMenu() {
+
+    const buttons =
+        document.querySelectorAll(
+            "[data-player-count]"
+        );
+
+    buttons.forEach(button => {
+
+        button.addEventListener(
+            "click",
+            () => {
+
+                const count =
+                    Number(
+                        button.dataset.playerCount
+                    );
+
+                startGameWithPlayerCount(count);
+
+            }
+        );
+
+    });
+
+}
+
 
 // ==========================================
 // AVVIO
 // ==========================================
 
-setupGame();
-
-updateTable();
-
-setMessage(
-    "Scegli le carte da utilizzare per la tua offerta."
-);
-
-showBidButton();
-
+initializePlayerCountMenu();
 
 // ==========================================
 // DEBUG
