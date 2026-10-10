@@ -1236,3 +1236,11 @@ button.primary {
 [hidden] {
     display: none !important;
 }
+
+/* Allinea al centro i bot nelle partite a 3 giocatori */
+@media (min-width: 900px) {
+    #players:has(.player:nth-child(2):last-child) {
+        grid-template-columns: repeat(2, minmax(220px, 1fr));
+        justify-content: center;
+    }
+}
