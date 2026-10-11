@@ -587,25 +587,58 @@ function setupGame() {
     // RIMOZIONE DI UNA VALUTA
     // --------------------------------------
 
-    game.removedCurrency =
-        CURRENCIES[
-            Math.floor(
-                Math.random() *
-                CURRENCIES.length
-            )
-        ];
+// RIMOZIONE VALUTE IN BASE AI GIOCATORI
+// 3 giocatori: 2 valute
+// 4 giocatori: 1 valuta
+// 5 giocatori: nessuna valuta
 
+const currenciesToRemove =
+    numberOfPlayers === 3 ? 2 :
+    numberOfPlayers === 4 ? 1 :
+    0;
 
-    fullDeck =
-        fullDeck.filter(
-            card =>
-                card.currency !==
-                game.removedCurrency
+const shuffledCurrencies =
+    [...CURRENCIES];
+
+for (
+    let i = shuffledCurrencies.length - 1;
+    i > 0;
+    i--
+) {
+    const j =
+        Math.floor(
+            Math.random() * (i + 1)
         );
 
+    [
+        shuffledCurrencies[i],
+        shuffledCurrencies[j]
+    ] = [
+        shuffledCurrencies[j],
+        shuffledCurrencies[i]
+    ];
+}
 
-    game.deck =
-        fullDeck;
+const removedCurrencies =
+    shuffledCurrencies.slice(
+        0,
+        currenciesToRemove
+    );
+
+game.removedCurrency =
+    removedCurrencies.length > 0
+        ? removedCurrencies.join(", ")
+        : "nessuna";
+
+fullDeck =
+    fullDeck.filter(
+        card =>
+            !removedCurrencies.includes(
+                card.currency
+            )
+    );
+
+game.deck = fullDeck;
 
 
     // --------------------------------------
