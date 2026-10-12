@@ -4426,45 +4426,39 @@ function renderMarketSide(elementId, cards) {
 // ==========================================
 
 function renderPlayerBid() {
-
-    const container =
-        document.getElementById(
-            "player-bid"
-        );
-
-
+    const container = document.getElementById("player-bid");
     container.innerHTML = "";
 
+    const player = game.players[0];
 
-    const player =
-        game.players[0];
+    // Riga orizzontale delle carte offerte.
+    const cardsRow = document.createElement("div");
+    cardsRow.className = "cards player-bid-cards";
 
-
-if (player.bid.length > 0) {
     for (const card of player.bid) {
-        container.appendChild(createCardElement(card));
+        cardsRow.appendChild(createCardElement(card));
+    }
+
+    if (player.bid.length > 0) {
+        container.appendChild(cardsRow);
+    }
+
+    // Pulsante sotto la puntata, solo durante il tuo turno.
+    const isYourTurn =
+        game.phase === "resolution" &&
+        game.currentPlayerId === player.id &&
+        player.bid.length > 0;
+
+    if (isYourTurn) {
+        const button = createActionButton(
+            "Nessuno scambio",
+            () => executeAction(player, { type: "pass" })
+        );
+
+        button.classList.add("market-action");
+        container.appendChild(button);
     }
 }
-
-// Mostra "Nessuno scambio" sotto la tua offerta
-// quando è il tuo turno di scegliere.
-const isYourTurn =
-    game.phase === "resolution" &&
-    game.currentPlayerId === player.id &&
-    player.bid.length > 0;
-
-if (isYourTurn) {
-    const button = createActionButton(
-        "Nessuno scambio",
-        () => executeAction(player, { type: "pass" })
-    );
-
-    button.classList.add("market-action");
-    container.appendChild(button);
-}
-
-}
-
 
 // ==========================================
 // RENDER MAZZO
