@@ -2409,255 +2409,164 @@ function getNextPlayer() {
 function chooseBotAction(
     player
 ) {
+    const profile = player.botProfile;
 
-    const profile =
-        player.botProfile;
-
-
-    // --------------------------------------
-    // BLUFF DA SOLO
-    // --------------------------------------
-
+    // Il bluff da solo non permette di prendere carte.
     if (
         player.bid.length === 1 &&
         player.bid[0].type === "play-money"
     ) {
-
         return {
-
             type: "pass"
-
         };
-
     }
-
 
     const actions = [];
+    const human = game.players[0];
+    const botTargets = getBotTargets(player);
 
+    /*
+     * Bonus di disturbo prudente:
+     * il bot deve puntare alla valuta e tu
+     * devi averne almeno 3 carte visibili.
+     */
+    function getDisruptionBonus(cards) {
+        let bonus = 0;
 
-    // --------------------------------------
-    // OFFERTA A
-    // --------------------------------------
-
-    if (
-        game.market.left.length > 0
-    ) {
-
-        actions.push({
-
-            type: "left",
-
-            targetValue:
-                evaluateAcquisition(
-                    player,
-                    game.market.left,
-                    player.bid
-                ) *
-                profile.lotWeight
-
-        });
-
-    }
-
-
-    // --------------------------------------
-    // OFFERTA B
-    // --------------------------------------
-
-    if (
-        game.market.right.length > 0
-    ) {
-
-        actions.push({
-
-            type: "right",
-
-            targetValue:
-                evaluateAcquisition(
-                    player,
-                    game.market.right,
-                    player.bid
-                ) *
-                profile.lotWeight
-
-        });
-
-    }
-
-
-    // --------------------------------------
-    // OFFERTE AVVERSARIE
-    // --------------------------------------
-
-    for (const opponent of game.players) {
-
-        if (
-            opponent.id === player.id
-        ) {
-
-            continue;
-
-        }
-
-
-        if (
-            opponent.resolved
-        ) {
-
-            continue;
-
-        }
-
-
-        if (
-            opponent.bid.length === 0
-        ) {
-
-            continue;
-
-        }
-
-
-        let targetValue =
-            evaluateOpponentBid(
-                player,
-                opponent
-            );
-
-
-        // ----------------------------------
-        // DISTURBO
-        // ----------------------------------
-
-        for (const card of opponent.bid) {
-
-            if (
-                card.type !== "money"
-            ) {
-
+        for (const card of cards) {
+            if (card.type !== "money") {
                 continue;
-
             }
 
+            const humanCardsInCurrency =
+                getCurrencyCards(human, card.currency).length;
 
-            const opponentCards =
-                getCurrencyCards(
-                    opponent,
-                    card.currency
+            if (humanCardsInCurrency < 3) {
+                continue;
+            }
+
+            const botTargetsThisCurrency =
+                botTargets.some(
+                    target => target.currency === card.currency
                 );
 
-
-            if (
-                opponentCards.length >= 4
-            ) {
-
-                targetValue +=
-                    50 *
-                    profile.aggression;
-
+            if (botTargetsThisCurrency) {
+                bonus += 18 * profile.aggression;
             }
-
-
-            if (
-                opponentCards.length >= 6
-            ) {
-
-                targetValue +=
-                    80 *
-                    profile.aggression;
-
-            }
-
         }
 
-
-        actions.push({
-
-            type: "steal",
-
-            targetId:
-                opponent.id,
-
-            targetValue:
-                targetValue *
-                profile.lotWeight
-
-        });
-
+        return bonus;
     }
 
-
-    // --------------------------------------
-    // PASS
-    // --------------------------------------
-
-    actions.push({
-
-        type: "pass",
-
-        targetValue: 0
-
-    });
-
-
-    actions.sort(
-        (a, b) =>
-            b.targetValue - a.targetValue
-    );
-
-
-    const best =
-        actions[0];
-
-
-    const bidCost =
-        evaluateBidCost(
+    // Valuta l'offerta A.
+    if (game.market.left.length > 0) {
+        const ownValue = evaluateAcquisition(
             player,
+            game.market.left,
             player.bid
         );
 
+        actions.push({
+            type: "left",
+            targetValue:
+                ownValue * profile.lotWeight +
+                getDisruptionBonus(game.market.left)
+        });
+    }
 
-    // --------------------------------------
-    // SOGLIA DI CONVENIENZA
-    // --------------------------------------
+    // Valuta l'offerta B.
+    if (game.market.right.length > 0) {
+        const ownValue = evaluateAcquisition(
+            player,
+            game.market.right,
+            player.bid
+        );
 
-    /*
-     * Prima:
-     *
-     * best < bidCost * 0.40
-     *
-     * Ora la soglia dipende dal carattere.
-     *
-     * Bot aggressivi:
-     * accettano più facilmente scambi costosi.
-     */
+        actions.push({
+            type: "right",
+            targetValue:
+                ownValue * profile.lotWeight +
+                getDisruptionBonus(game.market.right)
+        });
+    }
+
+    // Valuta le offerte ancora disponibili degli avversari.
+    for (const opponent of game.players) {
+        if (
+            opponent.id === player.id ||
+            opponent.resolved ||
+            opponent.bid.length === 0
+        ) {
+            continue;
+        }
+
+        let targetValue = evaluateOpponentBid(
+            player,
+            opponent
+        );
+
+        // Incentivo a sottrarre carte da una valuta
+        // che l'avversario sembra raccogliere.
+        for (const card of opponent.bid) {
+            if (card.type !== "money") {
+                continue;
+            }
+
+            const opponentCardsInCurrency =
+                getCurrencyCards(
+                    opponent,
+                    card.currency
+                ).length;
+
+            if (opponentCardsInCurrency >= 4) {
+                targetValue += 50 * profile.aggression;
+            }
+
+            if (opponentCardsInCurrency >= 6) {
+                targetValue += 80 * profile.aggression;
+            }
+        }
+
+        actions.push({
+            type: "steal",
+            targetId: opponent.id,
+            targetValue: targetValue * profile.lotWeight
+        });
+    }
+
+    // Passare resta sempre possibile.
+    actions.push({
+        type: "pass",
+        targetValue: 0
+    });
+
+    actions.sort(
+        (a, b) => b.targetValue - a.targetValue
+    );
+
+    const best = actions[0];
+    const bidCost = evaluateBidCost(
+        player,
+        player.bid
+    );
 
     const acceptanceThreshold =
         0.40 *
         profile.sacrificeWeight /
         profile.aggression;
 
-
     if (
         best.type !== "pass" &&
         best.targetValue <
-            bidCost *
-            acceptanceThreshold
+            bidCost * acceptanceThreshold
     ) {
-
         return {
-
             type: "pass"
-
         };
-
     }
 
-
     return best;
-
 }
-
 
 // ==========================================
 // RISOLUZIONE TURNO BOT
