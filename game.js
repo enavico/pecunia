@@ -4591,32 +4591,57 @@ function renderMarket() {
 }
 
 
-function renderMarketSide(
-    elementId,
-    cards
-) {
+function renderMarketSide(elementId, cards, side) {
 
     const container =
-        document.getElementById(
-            elementId
-        );
+        document.getElementById(elementId);
 
+    if (!container) {
+        return;
+    }
 
     container.innerHTML = "";
 
-
     for (const card of cards) {
-
         container.appendChild(
-            createCardElement(
-                card
-            )
+            createCardElement(card)
         );
-
     }
 
-}
+    const currentPlayer =
+        game.players.find(
+            player =>
+                player.id === game.currentPlayerId
+        );
 
+    const canTakeMarket =
+        game.phase === "resolution" &&
+        currentPlayer &&
+        currentPlayer.id === 1 &&
+        currentPlayer.bid.length > 0 &&
+        cards.length > 0;
+
+    if (canTakeMarket) {
+
+        const button =
+            createActionButton(
+                side === "left"
+                    ? "Prendi offerta A"
+                    : "Prendi offerta B",
+                () => {
+                    executeAction(
+                        currentPlayer,
+                        {
+                            type: side
+                        }
+                    );
+                }
+            );
+
+        button.classList.add("market-action");
+        container.appendChild(button);
+    }
+}
 
 // ==========================================
 // RENDER OFFERTA UMANA
