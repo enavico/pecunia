@@ -1294,3 +1294,26 @@ button.primary {
     align-self: center;
     margin: 0 auto;
 }
+
+/* Puntata: carte in orizzontale, pulsante sotto */
+#player-bid {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+#player-bid .player-bid-cards {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+}
+
+#player-bid > .market-action {
+    align-self: center;
+    margin: 0 auto;
+}
