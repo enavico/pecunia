@@ -4702,24 +4702,28 @@ function renderPlayerBid() {
         game.players[0];
 
 
-    if (
-        player.bid.length === 0
-    ) {
-
-        return;
-
-    }
-
-
+if (player.bid.length > 0) {
     for (const card of player.bid) {
-
-        container.appendChild(
-            createCardElement(
-                card
-            )
-        );
-
+        container.appendChild(createCardElement(card));
     }
+}
+
+// Mostra "Nessuno scambio" sotto la tua offerta
+// quando è il tuo turno di scegliere.
+const isYourTurn =
+    game.phase === "resolution" &&
+    game.currentPlayerId === player.id &&
+    player.bid.length > 0;
+
+if (isYourTurn) {
+    const button = createActionButton(
+        "Nessuno scambio",
+        () => executeAction(player, { type: "pass" })
+    );
+
+    button.classList.add("market-action");
+    container.appendChild(button);
+}
 
 }
 
