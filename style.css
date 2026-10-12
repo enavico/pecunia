@@ -1244,3 +1244,53 @@ button.primary {
         justify-content: center;
     }
 }
+
+/* ==========================================
+   ALLINEAMENTO PULSANTI DELLE OFFERTE
+   ========================================== */
+
+/* Ogni offerta dispone carte e pulsante in colonna */
+#market-left,
+#market-right {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+}
+
+/* Le carte restano raccolte nella propria riga */
+#market-left .market-cards,
+#market-right .market-cards {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+/* Pulsanti A e B centrati sotto le rispettive carte */
+#market-left > .market-action,
+#market-right > .market-action {
+    display: block;
+    align-self: center;
+    margin: 0 auto;
+}
+
+/* La puntata e "Nessuno scambio" in colonna */
+#player-bid {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Evita che il pulsante della puntata slitti lateralmente */
+#player-bid > .market-action {
+    display: block;
+    align-self: center;
+    margin: 0 auto;
+}
