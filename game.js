@@ -4452,6 +4452,45 @@ for (const card of sortCardsForDisplay(player.hand)) {
             playerElement.appendChild(
                 bidCards
             );
+            const currentPlayer =
+    game.players.find(
+        candidate =>
+            candidate.id === game.currentPlayerId
+    );
+
+const canTakeBotBid =
+    game.phase === "resolution" &&
+    currentPlayer &&
+    currentPlayer.id === 1 &&
+    currentPlayer.bid.length > 0 &&
+    player.id !== 1 &&
+    !player.resolved;
+
+if (canTakeBotBid) {
+
+    const takeBotBidButton =
+        createActionButton(
+            `Prendi offerta di ${player.name}`,
+            () => {
+                executeAction(
+                    currentPlayer,
+                    {
+                        type: "steal",
+                        targetId: player.id
+                    }
+                );
+            }
+        );
+
+    takeBotBidButton.classList.add(
+        "market-action"
+    );
+
+    playerElement.appendChild(
+        takeBotBidButton
+    );
+
+}
 
         }
 
