@@ -262,7 +262,7 @@ function assignBotProfiles(players) {
         "HYBRID"
     ];
 
-    // Mescola l'ordine dei profili.
+    // Mescola i profili disponibili.
     for (let i = types.length - 1; i > 0; i--) {
 
         const j =
@@ -275,18 +275,15 @@ function assignBotProfiles(players) {
 
     }
 
-    // Assegna un profilo a ciascun bot.
-    // Se ci sono più di tre bot, riparte dall'inizio
-    // e un profilo può essere assegnato più volte.
+    // Assegna casualmente un profilo a ogni bot.
+    // Se i bot sono più di tre, alcuni profili si ripetono.
     for (let i = 1; i < players.length; i++) {
 
-        const profileIndex =
-            (i - 1) % types.length;
+        const profileType =
+            types[(i - 1) % types.length];
 
         players[i].botProfile =
-            createRandomBotProfile(
-                types[profileIndex]
-            );
+            createRandomBotProfile(profileType);
 
     }
 
