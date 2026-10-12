@@ -4579,13 +4579,14 @@ function renderMarket() {
 
     renderMarketSide(
         "market-left",
-        game.market.left
+        game.market.left,
+        "left"
     );
-
 
     renderMarketSide(
         "market-right",
-        game.market.right
+        game.market.right,
+        "right"
     );
 
 }
