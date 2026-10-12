@@ -4631,58 +4631,39 @@ function renderMarket() {
 }
 
 
-function renderMarketSide(elementId, cards, side) {
-
-    const container =
-        document.getElementById(elementId);
-
-    if (!container) {
-        return;
-    }
-
+function renderMarketSide(elementId, cards) {
+    const container = document.getElementById(elementId);
     container.innerHTML = "";
 
+    const cardsRow = document.createElement("div");
+    cardsRow.className = "cards market-cards";
+
     for (const card of cards) {
-        container.appendChild(
-            createCardElement(card)
-        );
+        cardsRow.appendChild(createCardElement(card));
     }
 
-    const currentPlayer =
-        game.players.find(
-            player =>
-                player.id === game.currentPlayerId
-        );
+    container.appendChild(cardsRow);
+
+    const player = game.players[0];
 
     const canTakeMarket =
         game.phase === "resolution" &&
-        currentPlayer &&
-        currentPlayer.id === 1 &&
-        currentPlayer.bid.length > 0 &&
+        game.currentPlayerId === player.id &&
+        player.bid.length > 0 &&
         cards.length > 0;
 
     if (canTakeMarket) {
+        const side = elementId === "market-left" ? "left" : "right";
+        const label = side === "left" ? "Prendi offerta A" : "Prendi offerta B";
 
-        const button =
-            createActionButton(
-                side === "left"
-                    ? "Prendi offerta A"
-                    : "Prendi offerta B",
-                () => {
-                    executeAction(
-                        currentPlayer,
-                        {
-                            type: side
-                        }
-                    );
-                }
-            );
+        const button = createActionButton(label, () => {
+            executeAction(player, { type: side });
+        });
 
         button.classList.add("market-action");
         container.appendChild(button);
     }
 }
-
 // ==========================================
 // RENDER OFFERTA UMANA
 // ==========================================
