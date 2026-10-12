@@ -1107,43 +1107,41 @@ function evaluateBidCost(
     player,
     bid
 ) {
-
-    if (
-        bid.length === 0
-    ) {
-
+    if (bid.length === 0) {
         return 0;
-
     }
 
+    const before = evaluateObjectiveScore(player.hand);
 
-    const before =
-        evaluateObjectiveScore(
-            player.hand
-        );
-
-
-    const remaining =
-        player.hand.filter(
-            card =>
-                !bid.some(
-                    offered =>
-                        offered.id === card.id
-                )
-        );
-
-
-    const after =
-        evaluateObjectiveScore(
-            remaining
-        );
-
-
-    return Math.max(
-        0,
-        before - after
+    const remaining = player.hand.filter(
+        card =>
+            !bid.some(
+                offered => offered.id === card.id
+            )
     );
 
+    const after = evaluateObjectiveScore(remaining);
+
+    /*
+     * Costo netto delle carte offerte:
+     * se toglierle cambia poco il valore della mano,
+     * il bot le considera sacrificabili per l'asta.
+     * Se invece sostiene una valuta o un tris,
+     * il costo resta alto e tende a proteggerle.
+     */
+    const lostValue = Math.max(0, before - after);
+
+    /*
+     * Piccolo incentivo, non una scelta automatica:
+     * cresce un po' nella fase avanzata, ma non
+     * annulla mai il valore strategico delle carte.
+     */
+    const lateGameFactor =
+        game.finalRound ? 1.15 :
+        game.deck.length < 20 ? 1.08 :
+        1;
+
+    return lostValue / lateGameFactor;
 }
 
 
