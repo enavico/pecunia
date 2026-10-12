@@ -90,81 +90,45 @@ const game = {
 const BOT_PROFILES = {
 
     TRIS: {
-
         label: "cacciatore di tris",
-
-        aggression: 1.12,
-
+        aggression: 1.28,
         triple20Weight: 1.30,
-
         triple30Weight: 1.38,
-
         set200Weight: 0.82,
-
         near200Weight: 0.88,
-
-        lotWeight: 1.10,
-
-        sacrificeWeight: 0.80,
-
-        multiCardWeight: 1.15,
-
+        lotWeight: 1.22,
+        sacrificeWeight: 0.68,
+        multiCardWeight: 1.25,
         bluffWeight: 1.05
-
     },
-
 
     SET: {
-
         label: "cacciatore di set",
-
-        aggression: 1.10,
-
+        aggression: 1.25,
         triple20Weight: 0.82,
-
         triple30Weight: 0.86,
-
         set200Weight: 1.35,
-
         near200Weight: 1.28,
-
-        lotWeight: 1.10,
-
-        sacrificeWeight: 0.80,
-
-        multiCardWeight: 1.10,
-
+        lotWeight: 1.22,
+        sacrificeWeight: 0.68,
+        multiCardWeight: 1.22,
         bluffWeight: 1.00
-
     },
 
-
-HYBRID: {
-
-    label: "opportunista",
-
-    aggression: 1.35,
-
-    triple20Weight: 1.00,
-
-    triple30Weight: 1.08,
-
-    set200Weight: 1.08,
-
-    near200Weight: 1.04,
-
-    lotWeight: 1.30,
-
-    sacrificeWeight: 0.58,
-
-    multiCardWeight: 1.30,
-
-    bluffWeight: 1.12
-
-}
+    HYBRID: {
+        label: "opportunista",
+        aggression: 1.50,
+        triple20Weight: 1.00,
+        triple30Weight: 1.08,
+        set200Weight: 1.08,
+        near200Weight: 1.04,
+        lotWeight: 1.40,
+        sacrificeWeight: 0.48,
+        multiCardWeight: 1.40,
+        bluffWeight: 1.15
+    }
 
 };
-
 
 // ==========================================
 // CREAZIONE PROFILO BOT
@@ -262,7 +226,11 @@ function assignBotProfiles(players) {
         "HYBRID"
     ];
 
-    // Mescola i profili disponibili.
+    /*
+     * Mescola l'ordine dei profili.
+     * Ogni bot ne riceve uno a caso.
+     * Con quattro bot, un profilo si ripete.
+     */
     for (let i = types.length - 1; i > 0; i--) {
 
         const j =
@@ -270,20 +238,25 @@ function assignBotProfiles(players) {
                 Math.random() * (i + 1)
             );
 
-        [types[i], types[j]] =
-            [types[j], types[i]];
+        [
+            types[i],
+            types[j]
+        ] = [
+            types[j],
+            types[i]
+        ];
 
     }
 
-    // Assegna casualmente un profilo a ogni bot.
-    // Se i bot sono più di tre, alcuni profili si ripetono.
     for (let i = 1; i < players.length; i++) {
 
-        const profileType =
-            types[(i - 1) % types.length];
+        const profileIndex =
+            (i - 1) % types.length;
 
         players[i].botProfile =
-            createRandomBotProfile(profileType);
+            createRandomBotProfile(
+                types[profileIndex]
+            );
 
     }
 
