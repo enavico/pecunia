@@ -901,231 +901,81 @@ function simulateHandAfterTaking(
 // VALUTAZIONE OBIETTIVI DEL BOT
 // ==========================================
 
-function evaluateObjectiveScore(
-    cards
-) {
-
+function evaluateObjectiveScore(cards) {
     let score = 0;
 
-
-    // --------------------------------------
-    // RAGGRUPPA LE CARTE PER VALUTA
-    // --------------------------------------
-
     for (const currency of CURRENCIES) {
-
-        const currencyCards =
-            cards.filter(
-                card =>
-                    card.type === "money" &&
-                    card.currency === currency
-            );
-
-
-        if (
-            currencyCards.length === 0
-        ) {
-
-            continue;
-
-        }
-
-
-        const value =
-            currencyCards.reduce(
-                (total, card) =>
-                    total + card.value,
-                0
-            );
-
-
-        const twenties =
-            currencyCards.filter(
-                card =>
-                    card.value === 20
-            ).length;
-
-
-        const thirties =
-            currencyCards.filter(
-                card =>
-                    card.value === 30
-            ).length;
-
-
-        // ----------------------------------
-        // TRIS DI 20
-        // ----------------------------------
-
-        if (
-            twenties >= 3
-        ) {
-
-            score += 500;
-
-        } else if (
-            twenties === 2
-        ) {
-
-            score += 190;
-
-        } else if (
-            twenties === 1
-        ) {
-
-            score += 35;
-
-        }
-
-
-        // ----------------------------------
-        // TRIS DI 30
-        // ----------------------------------
-
-        if (
-            thirties >= 3
-        ) {
-
-            score += 500;
-
-        } else if (
-            thirties === 2
-        ) {
-
-            score += 220;
-
-        } else if (
-            thirties === 1
-        ) {
-
-            score += 45;
-
-        }
-
-
-        // ----------------------------------
-        // OBIETTIVO 200
-        // ----------------------------------
-
-        if (
-            value >= 200
-        ) {
-
-            score += 650;
-
-        } else {
-
-            if (
-                value >= 180
-            ) {
-
-                score += 420;
-
-            } else if (
-                value >= 160
-            ) {
-
-                score += 300;
-
-            } else if (
-                value >= 140
-            ) {
-
-                score += 190;
-
-            } else if (
-                value >= 120
-            ) {
-
-                score += 110;
-
-            } else if (
-                value >= 100
-            ) {
-
-                score += 55;
-
-            } else {
-
-                score +=
-                    value * 0.20;
-
-            }
-
-        }
-
-
-        // ----------------------------------
-        // SOGLIA 200: BONUS MARGINALE
-        // ----------------------------------
-
-        if (
-            value < 200
-        ) {
-
-            const missing =
-                200 - value;
-
-
-            if (
-                missing <= 20
-            ) {
-
-                score += 280;
-
-            } else if (
-                missing <= 30
-            ) {
-
-                score += 180;
-
-            } else if (
-                missing <= 40
-            ) {
-
-                score += 110;
-
-            } else if (
-                missing <= 60
-            ) {
-
-                score += 60;
-
-            }
-
-        }
-
-
-        // ----------------------------------
-        // RACCOLTA DELLA VALUTA
-        // ----------------------------------
-
-        score +=
-            currencyCards.length * 12;
-
-    }
-
-
-    // --------------------------------------
-    // MONETE
-    // --------------------------------------
-
-    const coins =
-        cards.filter(
+        const currencyCards = cards.filter(
             card =>
-                card.type === "coin"
+                card.type === "money" &&
+                card.currency === currency
+        );
+
+        if (currencyCards.length === 0) {
+            continue;
+        }
+
+        const value = currencyCards.reduce(
+            (total, card) => total + card.value,
+            0
+        );
+
+        const twenties = currencyCards.filter(
+            card => card.value === 20
         ).length;
 
+        const thirties = currencyCards.filter(
+            card => card.value === 30
+        ).length;
 
-    score +=
-        coins * 12;
+        /*
+         * Approssima il punteggio finale della valuta.
+         * Sotto 200 si applica la penalità di 100,
+         * come nel conteggio finale.
+         */
+        score += value >= 200
+            ? value
+            : Math.max(0, value - 100);
 
+        /*
+         * Tiene conto del progresso verso la soglia 200,
+         * senza fingere che le carte mancanti siano già in mano.
+         */
+        if (value >= 160 && value < 200) {
+            score += 35;
+        } else if (value >= 120 && value < 160) {
+            score += 15;
+        }
+
+        /*
+         * Bonus per i tris completi; piccolo valore intermedio
+         * per una coppia, così il bot sa quando è vicino a chiuderli.
+         */
+        if (twenties === 3) {
+            score += 100;
+        } else if (twenties === 2) {
+            score += 28;
+        } else if (twenties === 1) {
+            score += 5;
+        }
+
+        if (thirties === 3) {
+            score += 100;
+        } else if (thirties === 2) {
+            score += 32;
+        } else if (thirties === 1) {
+            score += 6;
+        }
+    }
+
+    const coins = cards.filter(
+        card => card.type === "coin"
+    ).length;
+
+    score += coins * 10;
 
     return score;
-
 }
-
-
 // ==========================================
 // VALORE STRATEGICO DELLA CARTA
 // ==========================================
