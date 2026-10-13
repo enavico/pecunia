@@ -1555,28 +1555,38 @@ function getBotTargets(
         // OBIETTIVO 200
         // ----------------------------------
 
-        if (
-            value >= 160 &&
-            value < 200
-        ) {
+if (
+    value >= 120 &&
+    value < 200
+) {
 
-            targets.push({
+    const distanceFrom200 =
+        200 - value;
 
-                type: "reach200",
+    const progress =
+        value - 120;
 
-                currency:
-                    currency,
+    targets.push({
 
-                priority:
-                    (
-                        900 +
-                        (value - 160) * 3
-                    ) *
-                    profile.near200Weight
+        type: "reach200",
 
-            });
+        currency:
+            currency,
 
-        }
+        priority:
+            (
+                620 +
+                progress * 5 +
+                Math.max(
+                    0,
+                    80 - distanceFrom200
+                ) * 4
+            ) *
+            profile.near200Weight
+
+    });
+
+}
 
 
         // ----------------------------------
