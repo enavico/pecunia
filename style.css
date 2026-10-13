@@ -1,3 +1,7 @@
+/* ==========================================
+   BASE
+   ========================================== */
+
 * {
     box-sizing: border-box;
 }
@@ -15,9 +19,7 @@
 body {
     margin: 0;
     min-height: 100vh;
-    background:
-        radial-gradient(circle at 50% 20%, #353535 0%, #222 55%, #181818 100%);
-    color: white;
+    color: #ffffff;
     font-family:
         Inter,
         -apple-system,
@@ -25,22 +27,26 @@ body {
         "Segoe UI",
         Arial,
         sans-serif;
+    background:
+        radial-gradient(
+            circle at 50% 20%,
+            #353535 0%,
+            #222222 55%,
+            #181818 100%
+        );
 }
 
-/* ==========================================
-   HEADER
-   ========================================== */
 
 /* ==========================================
-   HEADER GRAFICO — PECUNIA!
+   HEADER — PECUNIA!
    ========================================== */
 
 .pecunia-header {
     position: relative;
     isolation: isolate;
     overflow: hidden;
-    min-height: 190px;
-    padding: 28px 20px;
+    min-height: 128px;
+    padding: 18px 20px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -49,13 +55,13 @@ body {
         1px solid rgba(231, 198, 90, 0.34);
     background:
         radial-gradient(
-            ellipse at 50% 40%,
+            ellipse at 50% 42%,
             rgba(80, 143, 86, 0.34) 0%,
             rgba(35, 86, 47, 0.88) 58%,
             #193c24 100%
         );
     box-shadow:
-        inset 0 -20px 28px rgba(0, 0, 0, 0.28),
+        inset 0 -18px 28px rgba(0, 0, 0, 0.28),
         inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
@@ -84,7 +90,7 @@ body {
     pointer-events: none;
 }
 
-/* Ombra/velatura: dà profondità e protegge il titolo */
+/* Fasce laterali scure: mantengono il centro pulito */
 .pecunia-header::after {
     content: "";
     position: absolute;
@@ -93,10 +99,10 @@ body {
     background:
         linear-gradient(
             90deg,
-            rgba(8, 24, 13, 0.68) 0%,
-            rgba(8, 24, 13, 0.12) 34%,
-            rgba(8, 24, 13, 0.12) 66%,
-            rgba(8, 24, 13, 0.68) 100%
+            rgba(8, 24, 13, 0.60) 0%,
+            rgba(8, 24, 13, 0.08) 30%,
+            rgba(8, 24, 13, 0.08) 70%,
+            rgba(8, 24, 13, 0.60) 100%
         );
     pointer-events: none;
 }
@@ -107,13 +113,13 @@ body {
 }
 
 .pecunia-header h1 {
-    margin: 0 0 8px;
+    margin: 0 0 5px;
     color: #fff4c6;
     font-family:
         Georgia,
         "Times New Roman",
         serif;
-    font-size: clamp(35px, 5vw, 58px);
+    font-size: clamp(31px, 4vw, 46px);
     font-weight: 700;
     letter-spacing: 0.10em;
     text-shadow:
@@ -130,18 +136,20 @@ body {
         0 1px 2px rgba(0, 0, 0, 0.90);
 }
 
+
 /* ==========================================
-   BANCONOTE DECORATIVE
+   BANCONOTE DECORATIVE HEADER
    ========================================== */
 
 .banknote {
     position: absolute;
     z-index: 0;
-    width: 210px;
-    height: 112px;
-    padding: 15px 17px;
+    width: 170px;
+    height: 90px;
+    padding: 11px 13px;
     overflow: hidden;
-    border: 1px solid rgba(255, 255, 255, 0.42);
+    border:
+        1px solid rgba(255, 255, 255, 0.42);
     border-radius: 8px;
     color: rgba(20, 29, 23, 0.84);
     display: flex;
@@ -151,18 +159,20 @@ body {
     box-shadow:
         0 11px 18px rgba(0, 0, 0, 0.38),
         inset 0 0 0 3px rgba(255, 255, 255, 0.18);
-    opacity: 0.74;
-    filter: saturate(0.72) contrast(0.92);
+    opacity: 0.70;
+    filter:
+        saturate(0.72)
+        contrast(0.92);
     user-select: none;
     pointer-events: none;
 }
 
-/* Cornice e filigrana */
 .banknote::before {
     content: "";
     position: absolute;
-    inset: 8px;
-    border: 1px solid rgba(23, 35, 26, 0.28);
+    inset: 7px;
+    border:
+        1px solid rgba(23, 35, 26, 0.28);
     border-radius: 4px;
     pointer-events: none;
 }
@@ -172,7 +182,7 @@ body {
     position: absolute;
     top: 50%;
     left: 50%;
-    font-size: 72px;
+    font-size: 58px;
     color: rgba(255, 255, 255, 0.22);
     transform: translate(-50%, -50%);
 }
@@ -185,7 +195,7 @@ body {
 }
 
 .banknote span {
-    font-size: 25px;
+    font-size: 20px;
     font-weight: 800;
     line-height: 1;
 }
@@ -196,105 +206,96 @@ body {
         Georgia,
         "Times New Roman",
         serif;
-    font-size: 42px;
+    font-size: 34px;
     line-height: 1;
 }
 
 .banknote small {
-    font-size: 8px;
+    font-size: 7px;
     font-weight: 800;
-    letter-spacing: 0.16em;
+    letter-spacing: 0.14em;
     opacity: 0.70;
 }
 
-/* Valute e disposizione sovrapposta */
+/* Lato sinistro */
 .banknote-euro {
-    top: 18px;
-    left: 4%;
+    top: 12px;
+    left: 2%;
     background:
         linear-gradient(145deg, #c9e9f8, #6d9fc5);
     transform: rotate(-13deg);
 }
 
 .banknote-dollar {
-    top: 38px;
-    left: 18%;
+    top: 33px;
+    left: 13%;
     background:
         linear-gradient(145deg, #cfeecf, #639e6d);
     transform: rotate(11deg);
 }
 
+/* Lato destro */
 .banknote-franc {
-    top: 16px;
-    right: 17%;
+    top: 11px;
+    right: 13%;
     background:
         linear-gradient(145deg, #ebd2f2, #a66ab6);
     transform: rotate(-10deg);
 }
 
 .banknote-pound {
-    top: 48px;
-    right: 3%;
+    top: 35px;
+    right: 2%;
     background:
         linear-gradient(145deg, #f1c9cc, #bd656e);
     transform: rotate(13deg);
 }
 
-.banknote-yen {
-    bottom: -26px;
-    left: 39%;
+
+/* ==========================================
+   MENU INIZIALE
+   ========================================== */
+
+.setup-menu {
+    width: min(92vw, 520px);
+    margin: 40px auto;
+    padding: 30px 24px;
+    text-align: center;
     background:
-        linear-gradient(145deg, #f9edba, #caa24a);
-    transform: rotate(-3deg);
-    opacity: 0.48;
+        linear-gradient(
+            180deg,
+            rgba(255, 255, 255, 0.06),
+            rgba(0, 0, 0, 0.24)
+        ),
+        #315f3a;
+    border:
+        1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 16px;
+    box-shadow:
+        0 18px 45px rgba(0, 0, 0, 0.40),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
-/* Su schermi piccoli la grafica resta leggibile */
-@media (max-width: 700px) {
-    .pecunia-header {
-        min-height: 160px;
-        padding: 24px 12px;
-    }
-
-    .banknote {
-        width: 145px;
-        height: 82px;
-        padding: 10px 12px;
-        opacity: 0.50;
-    }
-
-    .banknote strong {
-        font-size: 30px;
-    }
-
-    .banknote span {
-        font-size: 19px;
-    }
-
-    .banknote small {
-        font-size: 6px;
-    }
-
-    .banknote-dollar,
-    .banknote-franc {
-        display: none;
-    }
-
-    .banknote-euro {
-        left: -34px;
-        top: 28px;
-    }
-
-    .banknote-pound {
-        right: -38px;
-        top: 32px;
-    }
-
-    .banknote-yen {
-        left: 34%;
-        bottom: -38px;
-    }
+.setup-menu h2 {
+    margin: 0 0 10px;
+    font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
 }
+
+.setup-menu p {
+    margin: 0 0 18px;
+    color: var(--text-soft);
+}
+
+.setup-buttons {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
 
 /* ==========================================
    TAVOLO
@@ -302,11 +303,16 @@ body {
 
 #table {
     position: relative;
-    max-width: 1240px;
+    width: min(96vw, 1800px);
     min-height: 800px;
     margin: 0 auto 30px;
     padding: 32px;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 24px;
+    border-radius: 18px;
     background:
         radial-gradient(
             ellipse at center,
@@ -315,27 +321,22 @@ body {
             rgba(20, 54, 28, 0.32) 100%
         ),
         #315f3a;
-    border-radius: 18px;
     box-shadow:
         0 18px 45px rgba(0, 0, 0, 0.45),
         inset 0 0 0 2px rgba(255, 255, 255, 0.045),
         inset 0 0 55px rgba(0, 0, 0, 0.22);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    gap: 24px;
 }
-
-/* sottile bordo interno da vero tavolo */
 
 #table::before {
     content: "";
     position: absolute;
     inset: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.045);
+    border:
+        1px solid rgba(255, 255, 255, 0.045);
     border-radius: 12px;
     pointer-events: none;
 }
+
 
 /* ==========================================
    GIOCATORI
@@ -344,26 +345,30 @@ body {
 .players {
     position: relative;
     z-index: 1;
+    width: 100%;
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 14px;
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+    gap: 18px;
+    align-items: stretch;
 }
 
 .player {
     min-width: 0;
     padding: 15px 13px 13px;
+    text-align: center;
+    border:
+        1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 11px;
     background:
         linear-gradient(
             180deg,
             rgba(255, 255, 255, 0.045),
             rgba(0, 0, 0, 0.20)
         );
-    border-radius: 11px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
     box-shadow:
         0 4px 12px rgba(0, 0, 0, 0.15),
         inset 0 1px 0 rgba(255, 255, 255, 0.035);
-    text-align: center;
     transition:
         border-color 0.2s,
         background 0.2s,
@@ -406,15 +411,16 @@ body {
     color: #cdd2cd;
 }
 
+
 /* ==========================================
-   CARTE — BASE
+   CARTE
    ========================================== */
 
 .cards {
     display: flex;
+    flex-wrap: wrap;
     justify-content: center;
     align-items: center;
-    flex-wrap: wrap;
     gap: 8px;
 }
 
@@ -422,25 +428,24 @@ body {
     position: relative;
     width: 70px;
     height: 96px;
-    border-radius: 9px;
-    color: #171717;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    border:
+        1px solid rgba(0, 0, 0, 0.22);
+    border-radius: 9px;
+    color: #171717;
     user-select: none;
-    border: 1px solid rgba(0, 0, 0, 0.22);
     box-shadow:
         0 3px 5px rgba(0, 0, 0, 0.32),
         0 1px 1px rgba(255, 255, 255, 0.25) inset;
-    overflow: hidden;
     transition:
         transform 0.14s ease,
         box-shadow 0.14s ease,
         filter 0.14s ease;
 }
-
-/* piccolo effetto di carta */
 
 .card::after {
     content: "";
@@ -465,20 +470,16 @@ body {
     transform: translateY(-5px);
     box-shadow:
         0 9px 15px rgba(0, 0, 0, 0.38),
-        0 1px 1px rgba(255, 255, 255, 0.3) inset;
+        0 1px 1px rgba(255, 255, 255, 0.30) inset;
 }
 
 .card.selected {
-    transform: translateY(-11px);
     outline: 2px solid var(--gold-light);
+    transform: translateY(-11px);
     box-shadow:
         0 12px 19px rgba(0, 0, 0, 0.48),
         0 0 0 3px rgba(231, 198, 90, 0.18);
 }
-
-/* ==========================================
-   SIMBOLI DELLE VALUTE
-   ========================================== */
 
 .card[class*="currency-"]::before {
     position: absolute;
@@ -518,10 +519,6 @@ body {
     content: "₱";
 }
 
-/* ==========================================
-   TESTO CARTE
-   ========================================== */
-
 .card-currency {
     margin-top: 10px;
     margin-bottom: 3px;
@@ -550,12 +547,10 @@ body {
     opacity: 0.48;
 }
 
+
 /* ==========================================
    COLORI VALUTE
    ========================================== */
-
-/* EURO — azzurro
-   Più saturo e leggermente più freddo */
 
 .currency-euro {
     background:
@@ -563,16 +558,11 @@ body {
     border-color: #3d73a4;
 }
 
-/* DOLLAR — verde
-   Verde più netto, meno desaturato */
-
 .currency-dollar {
     background:
         linear-gradient(145deg, #d8f2dc 0%, #87c294 100%);
     border-color: #39764a;
 }
-
-/* FRANC — viola */
 
 .currency-franc {
     background:
@@ -580,16 +570,11 @@ body {
     border-color: #80488e;
 }
 
-/* POUND — rosso / corallo */
-
 .currency-pound {
     background:
         linear-gradient(145deg, #f9d8d8 0%, #d8898e 100%);
     border-color: #9a464d;
 }
-
-/* YEN — giallo caldo
-   Lasciato volutamente vicino alla versione precedente */
 
 .currency-yen {
     background:
@@ -597,17 +582,11 @@ body {
     border-color: #aa8530;
 }
 
-/* RUBLE — grigio
-   Più caratterizzato: leggermente freddo e molto più contrastato */
-
 .currency-ruble {
     background:
         linear-gradient(145deg, #e8edf0 0%, #aebbc2 100%);
     border-color: #596a73;
 }
-
-/* PESO — turchese
-   Più saturo per separarlo dall'azzurro */
 
 .currency-peso {
     background:
@@ -615,11 +594,16 @@ body {
     border-color: #347b72;
 }
 
+
 /* ==========================================
-   MONETA
+   MONETE, BLUFF E RETRO
    ========================================== */
 
 .card-coin {
+    width: 70px;
+    height: 70px;
+    border: 2px solid #a07e1b;
+    border-radius: 50%;
     background:
         radial-gradient(
             circle at 35% 30%,
@@ -627,12 +611,8 @@ body {
             #e8c94d 42%,
             #b99728 100%
         ) !important;
-    border: 2px solid #a07e1b;
-    border-radius: 50%;
-    width: 70px;
-    height: 70px;
     box-shadow:
-        0 4px 7px rgba(0, 0, 0, 0.4),
+        0 4px 7px rgba(0, 0, 0, 0.40),
         inset 0 0 0 2px rgba(255, 255, 255, 0.30),
         inset 0 0 0 5px rgba(125, 94, 12, 0.18);
 }
@@ -642,11 +622,11 @@ body {
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
+    color: #6d5410;
     font-size: 23px;
     font-weight: 800;
-    color: #6d5410;
     opacity: 0.85;
+    transform: translate(-50%, -50%);
 }
 
 .card-coin .card-value,
@@ -655,11 +635,9 @@ body {
     display: none;
 }
 
-/* ==========================================
-   PLAY MONEY
-   ========================================== */
-
 .card-play-money {
+    border: 2px dashed #777;
+    color: #444;
     background:
         repeating-linear-gradient(
             -45deg,
@@ -668,24 +646,22 @@ body {
             #d2d2d2 6px,
             #d2d2d2 12px
         ) !important;
-    border: 2px dashed #777;
-    color: #444;
     box-shadow:
         0 3px 5px rgba(0, 0, 0, 0.25),
-        inset 0 0 0 1px rgba(255, 255, 255, 0.4);
+        inset 0 0 0 1px rgba(255, 255, 255, 0.40);
 }
 
 .card-play-money::before {
     content: "BLUFF";
     position: absolute;
     top: 8px;
-    left: 0;
     right: 0;
-    text-align: center;
+    left: 0;
+    color: #666;
     font-size: 8px;
     font-weight: 800;
     letter-spacing: 0.16em;
-    color: #666;
+    text-align: center;
 }
 
 .card-play-money .card-currency {
@@ -693,31 +669,32 @@ body {
 }
 
 .card-play-money .card-value {
+    color: #555;
     font-size: 15px;
     letter-spacing: 0.03em;
     text-transform: uppercase;
-    color: #555;
 }
 
-/* ==========================================
-   RETRO DEL MAZZO
-   ========================================== */
-
 .card-back {
+    border: 2px solid #777 !important;
+    color: #eeeeee !important;
+    font-size: 25px;
+    font-weight: 800;
     background:
         linear-gradient(
             135deg,
             #616161,
             #424242
         ) !important;
-    color: #eeeeee !important;
-    border: 2px solid #777 !important;
     box-shadow:
-        0 5px 9px rgba(0, 0, 0, 0.4),
+        0 5px 9px rgba(0, 0, 0, 0.40),
         inset 0 0 0 3px rgba(255, 255, 255, 0.08);
-    font-size: 25px;
-    font-weight: 800;
 }
+
+.player .card-back {
+    opacity: 0.92;
+}
+
 
 /* ==========================================
    MERCATO
@@ -726,20 +703,24 @@ body {
 .center {
     position: relative;
     z-index: 1;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    gap: 55px;
+    width: 100%;
+    display: grid;
+    grid-template-columns:
+        minmax(0, 1fr)
+        minmax(0, 1fr)
+        minmax(130px, 180px);
+    gap: 24px;
+    align-items: start;
 }
 
 .market {
-    position: relative;
-    min-width: 330px;
+    width: 100%;
+    min-width: 0;
     padding: 15px 16px 18px;
     text-align: center;
+    border-radius: 12px;
     background:
         rgba(0, 0, 0, 0.11);
-    border-radius: 12px;
     box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, 0.025);
 }
@@ -748,800 +729,95 @@ body {
     display: inline-block;
     margin-bottom: 13px;
     padding: 4px 14px;
-    font-family: Georgia, "Times New Roman", serif;
+    border-bottom:
+        1px solid rgba(255, 255, 255, 0.20);
+    color: #f0f2ef;
+    font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
     font-size: 17px;
     font-weight: 700;
     letter-spacing: 0.04em;
-    color: #f0f2ef;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.20);
 }
 
-.market .cards {
-    min-height: 100px;
+#market-left,
+#market-right {
+    width: 100%;
+    min-height: 140px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+    padding: 10px;
 }
+
+#market-left .market-cards,
+#market-right .market-cards {
+    width: 100%;
+    min-height: 100px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 12px;
+}
+
+#market-left .card:not(.card-coin),
+#market-right .card:not(.card-coin) {
+    width: 76px;
+    height: 108px;
+    flex: 0 0 76px;
+}
+
+#market-left .card.card-coin,
+#market-right .card.card-coin {
+    width: 76px !important;
+    height: 76px !important;
+    min-width: 76px;
+    min-height: 76px;
+    flex: 0 0 76px;
+}
+
 
 /* ==========================================
-   MESSAGGIO / STATO
+   MESSAGGIO E PUNTATA
    ========================================== */
 
 .message {
     position: relative;
     z-index: 1;
+    width: 100%;
     min-height: 125px;
     padding: 10px 20px;
-    text-align: center;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
+    text-align: center;
+    border-top:
+        1px solid rgba(255, 255, 255, 0.035);
+    border-bottom:
+        1px solid rgba(255, 255, 255, 0.035);
     background:
         linear-gradient(
             180deg,
             rgba(0, 0, 0, 0.12),
             rgba(0, 0, 0, 0.20)
         );
-    border-top: 1px solid rgba(255, 255, 255, 0.035);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.035);
 }
 
 #message-text {
     margin-bottom: 10px;
+    color: #f0f2ee;
     font-size: 17px;
     font-weight: 600;
-    color: #f0f2ee;
 }
 
 #player-bid {
     min-height: 100px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-}
-
-/* ==========================================
-   MANO
-   ========================================== */
-
-#hand {
-    position: relative;
-    z-index: 1;
-    padding: 19px 20px 22px;
-    background:
-        linear-gradient(
-            180deg,
-            rgba(0, 0, 0, 0.24),
-            rgba(0, 0, 0, 0.30)
-        );
-    border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.055);
-    box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.025);
-}
-
-#hand h2 {
-    margin: 0 0 16px;
-    text-align: center;
-    font-family: Georgia, "Times New Roman", serif;
-    font-size: 18px;
-    font-weight: 700;
-    letter-spacing: 0.02em;
-}
-
-/* ==========================================
-   BOT / CARTE NASCOSTE
-   ========================================== */
-
-.player .card-back {
-    opacity: 0.92;
-}
-
-/* ==========================================
-   AZIONI
-   ========================================== */
-
-.actions {
-    position: relative;
-    z-index: 1;
-    text-align: center;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 7px;
-}
-
-button {
-    border: 1px solid rgba(0, 0, 0, 0.15);
-    border-radius: 7px;
-    padding: 10px 18px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    background:
-        linear-gradient(
-            180deg,
-            #f5f5f5,
-            #dcdcdc
-        );
-    color: #222;
-    box-shadow:
-        0 2px 4px rgba(0, 0, 0, 0.18);
-    transition:
-        transform 0.12s,
-        box-shadow 0.12s,
-        background 0.12s;
-    margin: 3px;
-}
-
-button:hover {
-    transform: translateY(-1px);
-    box-shadow:
-        0 4px 7px rgba(0, 0, 0, 0.25);
-}
-
-button:active {
-    transform: translateY(1px);
-}
-
-button:disabled {
-    opacity: 0.42;
-    cursor: default;
-    transform: none;
-    box-shadow: none;
-}
-
-button.primary {
-    background:
-        linear-gradient(
-            180deg,
-            #ffe27b,
-            #e8c04a
-        );
-    color: #3e330e;
-    border-color: #bd9b2d;
-    font-weight: 800;
-    box-shadow:
-        0 3px 6px rgba(0, 0, 0, 0.25),
-        inset 0 1px 0 rgba(255, 255, 255, 0.35);
-}
-
-/* ==========================================
-   PUNTEGGIO
-   ========================================== */
-
-.scoreboard {
-    margin-top: 15px;
-    min-width: 250px;
-    background:
-        rgba(0, 0, 0, 0.20);
-    border-radius: 9px;
-    padding: 11px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.score-line {
-    display: flex;
-    justify-content: space-between;
-    padding: 5px 0;
-    border-bottom:
-        1px solid rgba(255, 255, 255, 0.09);
-}
-
-.score-line:last-child {
-    border-bottom: 0;
-}
-
-/* ==========================================
-   CRONOLOGIA
-   ========================================== */
-
-#game-log {
-    position: relative;
-    z-index: 1;
-    margin-top: 4px;
-    padding: 14px 16px;
-    background:
-        rgba(0, 0, 0, 0.25);
-    border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    max-height: 190px;
-    overflow-y: auto;
-    font-size: 12px;
-    color: #d3d8d3;
-    box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.02);
-}
-
-#game-log::-webkit-scrollbar {
-    width: 6px;
-}
-
-#game-log::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.12);
-}
-
-#game-log::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.20);
-    border-radius: 10px;
-}
-
-/* ==========================================
-   RESPONSIVE
-   ========================================== */
-
-@media (max-width: 1000px) {
-    #table {
-        margin-left: 15px;
-        margin-right: 15px;
-    }
-
-    .players {
-        grid-template-columns: repeat(2, 1fr);
-    }
- 
-    .center {
-        gap: 20px;
-    }
-
-    .market {
-        min-width: 0;
-        flex: 1;
-    }
-}
-
-@media (max-width: 700px) {
-    header {
-        padding: 18px 12px 14px;
-    }
-
-    header h1 {
-        font-size: 29px;
-    }
-
-    #table {
-        min-height: 0;
-        margin: 0 8px 20px;
-        padding: 15px;
-        border-radius: 14px;
-        gap: 18px;
-    }
-
-    #table::before {
-        inset: 7px;
-    }
-
-    .players {
-        grid-template-columns: 1fr;
-        gap: 9px;
-    }
-
-    .player {
-        padding: 12px;
-    }
-
-    .center {
-        flex-direction: column;
-        align-items: center;
-        gap: 18px;
-    }
-
-    .market {
-        width: 100%;
-        padding: 12px 8px 15px;
-    }
-
-    .market-title {
-        font-size: 16px;
-    }
-
-    .card {
-        width: 62px;
-        height: 88px;
-    }
-
-    .card-value {
-        font-size: 24px;
-    }
-
-    .card-currency {
-        font-size: 7px;
-    }
-
-    .card-coin {
-        width: 62px;
-        height: 62px;
-    }
-
-    #hand {
-        padding: 15px 10px 18px;
-    }
-
-    #hand h2 {
-        font-size: 17px;
-    }
-
-    #message-text {
-        font-size: 15px;
-    }
-
-    #game-log {
-        max-height: 160px;
-    }
-}
-
-.market-action {
-    margin-top: 10px;
-    padding: 8px 12px;
-    border: none;
-    border-radius: 8px;
-    background: #ffd54a;
-    color: #222;
-    font-weight: 700;
-    cursor: pointer;
-}
-
-.market-action:hover {
-    background: #ffc107;
-}
-
-#market-left,
-#market-right {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-}
-
-/* ==========================================
-   LAYOUT DESKTOP
-   ========================================== */
-
-@media (min-width: 900px) {
-
-    #table {
-        width: min(96vw, 1800px);
-        margin: 0 auto;
-    }
-
-    .players {
-        width: 100%;
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 18px;
-        align-items: stretch;
-    }
-
-    .players .player {
-        width: auto;
-        min-width: 0;
-        box-sizing: border-box;
-    }
-
-    .players .cards {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(64px, 1fr));
-        gap: 10px;
-        justify-items: center;
-    }
-
-    .players .card {
-        width: clamp(64px, 5vw, 88px);
-        height: clamp(90px, 7vw, 124px);
-    }
-
-    .center {
-        width: 100%;
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(130px, 180px);
-        gap: 24px;
-        align-items: start;
-    }
-
-    .market {
-        width: 100%;
-        min-width: 0;
-    }
-
-    #market-left,
-    #market-right {
-        min-height: 150px;
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        align-items: flex-start;
-        gap: 12px;
-    }
-
-    #deck-area {
-        width: 100%;
-    }
-
-    #hand,
-    .actions,
-    .message {
-        width: 100%;
-        box-sizing: border-box;
-    }
-
-}
-
-/* ==========================================
-   LAYOUT DESKTOP: BOT E OFFERTE CON WRAP
-   Incollare in fondo a style.css
-   ========================================== */
-
-@media (min-width: 900px) {
-
-    /* --------------------------------------
-       TAVOLO PRINCIPALE
-       -------------------------------------- */
-
-    #table {
-        width: min(96vw, 1800px);
-        margin: 0 auto;
-    }
-
-    /* --------------------------------------
-       TRE BOT SU UN'UNICA RIGA
-       -------------------------------------- */
-
-    .players {
-        width: 100%;
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 18px;
-        align-items: stretch;
-    }
-
-    .players .player {
-        width: auto;
-        min-width: 0;
-        box-sizing: border-box;
-    }
-
-    /* --------------------------------------
-       CARTE DEI BOT:
-       DISPOSTE ORIZZONTALMENTE E A CAPO
-       -------------------------------------- */
-
-    .players .cards {
-        width: 100%;
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: center;
-        align-items: flex-start;
-        gap: 10px;
-        padding: 8px;
-        box-sizing: border-box;
-    }
-
-    .players .cards .card {
-        flex: 0 0 auto;
-        width: 76px;
-        height: 108px;
-    }
-
-    /* --------------------------------------
-       AREA CENTRALE: A, B E MAZZO
-       -------------------------------------- */
-
-    .center {
-        width: 100%;
-        display: grid;
-        grid-template-columns:
-            minmax(0, 1fr)
-            minmax(0, 1fr)
-            minmax(130px, 180px);
-        gap: 24px;
-        align-items: start;
-    }
-
-    .market {
-        width: 100%;
-        min-width: 0;
-    }
-
-    /* --------------------------------------
-       OFFERTE A E B:
-       ORIZZONTALI E A CAPO
-       -------------------------------------- */
-
-    #market-left,
-    #market-right {
-        width: 100%;
-        min-height: 140px;
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: center;
-        align-items: flex-start;
-        gap: 12px;
-        padding: 10px;
-        box-sizing: border-box;
-    }
-
-    #market-left .card,
-    #market-right .card {
-        flex: 0 0 auto;
-        width: 76px;
-        height: 108px;
-    }
-
-    /* --------------------------------------
-       ELEMENTI A LARGHEZZA PIENA
-       -------------------------------------- */
-
-    #hand,
-    .actions,
-    .message {
-        width: 100%;
-        box-sizing: border-box;
-    }
-
-}
-
-/* ==========================================
-   DIMENSIONI CARTE E MONETE
-   ========================================== */
-
-@media (min-width: 900px) {
-
-    /* Banconote dei bot */
-    .players .cards .card:not(.card-coin),
-    #market-left .card:not(.card-coin),
-    #market-right .card:not(.card-coin) {
-        width: 76px;
-        height: 108px;
-        flex: 0 0 76px;
-        box-sizing: border-box;
-    }
-
-    /* Monete circolari */
-    .players .cards .card.card-coin,
-    #market-left .card.card-coin,
-    #market-right .card.card-coin {
-        width: 76px !important;
-        height: 76px !important;
-        min-width: 76px;
-        min-height: 76px;
-        flex: 0 0 76px;
-        border-radius: 50%;
-        box-sizing: border-box;
-    }
-
-}
-/* ==========================================
-   LAYOUT MOBILE: CARTE ORIZZONTALI E A CAPO
-   Incollare in fondo a style.css
-   ========================================== */
-
-@media (max-width: 899px) {
-
-    /* --------------------------------------
-       Riquadri bot uno sotto l'altro
-       -------------------------------------- */
-
-    .players {
-        display: flex;
-        flex-direction: column;
-        gap: 14px;
-        width: 100%;
-    }
-
-    .players .player {
-        width: 100%;
-        min-width: 0;
-        box-sizing: border-box;
-    }
-
-    /* --------------------------------------
-       Carte dei bot:
-       da sinistra a destra e a capo
-       -------------------------------------- */
-
-    .players .cards {
-        width: 100%;
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: center;
-        align-items: flex-start;
-        gap: 8px;
-        padding: 8px;
-        box-sizing: border-box;
-    }
-
-    .players .cards .card:not(.card-coin) {
-        width: 54px;
-        height: 76px;
-        flex: 0 0 54px;
-        box-sizing: border-box;
-    }
-
-    .players .cards .card.card-coin {
-        width: 54px;
-        height: 54px;
-        min-width: 54px;
-        min-height: 54px;
-        flex: 0 0 54px;
-        border-radius: 50%;
-        box-sizing: border-box;
-    }
-
-    /* --------------------------------------
-       Offerte A e B:
-       una sotto l'altra, carte orizzontali
-       -------------------------------------- */
-
-    .center {
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-        gap: 14px;
-    }
-
-    .market {
-        width: 100%;
-        min-width: 0;
-    }
-
-    #market-left,
-    #market-right {
-        width: 100%;
-        min-height: 98px;
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: center;
-        align-items: flex-start;
-        gap: 8px;
-        padding: 8px;
-        box-sizing: border-box;
-    }
-
-    #market-left .card:not(.card-coin),
-    #market-right .card:not(.card-coin) {
-        width: 54px;
-        height: 76px;
-        flex: 0 0 54px;
-        box-sizing: border-box;
-    }
-
-    #market-left .card.card-coin,
-    #market-right .card.card-coin {
-        width: 54px;
-        height: 54px;
-        min-width: 54px;
-        min-height: 54px;
-        flex: 0 0 54px;
-        border-radius: 50%;
-        box-sizing: border-box;
-    }
-
-    /* --------------------------------------
-       Mazzo centrato, dopo le offerte
-       -------------------------------------- */
-
-    #deck-area {
-        align-self: center;
-        margin: 8px auto 0;
-    }
-
-    /* --------------------------------------
-       Mano, messaggi e azioni a piena larghezza
-       -------------------------------------- */
-
-    #hand,
-    .message,
-    .actions {
-        width: 100%;
-        box-sizing: border-box;
-    }
-
-}
-
-/* Menu iniziale scelta giocatori */
-
-.setup-menu {
-    width: min(92vw, 520px);
-    margin: 40px auto;
-    padding: 30px 24px;
-    text-align: center;
-    background: linear-gradient(
-        180deg,
-        rgba(255, 255, 255, 0.06),
-        rgba(0, 0, 0, 0.24)
-    ), #315f3a;
-    border: 1px solid rgba(255, 255, 255, 0.10);
-    border-radius: 16px;
-    box-shadow:
-        0 18px 45px rgba(0, 0, 0, 0.40),
-        inset 0 1px 0 rgba(255, 255, 255, 0.05);
-}
-
-.setup-menu h2 {
-    margin: 0 0 10px;
-    font-family: Georgia, "Times New Roman", serif;
-}
-
-.setup-menu p {
-    margin: 0 0 18px;
-    color: var(--text-soft);
-}
-
-.setup-buttons {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 8px;
-}
-
-[hidden] {
-    display: none !important;
-}
-
-/* Allinea al centro i bot nelle partite a 3 giocatori */
-@media (min-width: 900px) {
-    #players:has(.player:nth-child(2):last-child) {
-        grid-template-columns: repeat(2, minmax(220px, 1fr));
-        justify-content: center;
-    }
-}
-
-/* ==========================================
-   ALLINEAMENTO PULSANTI DELLE OFFERTE
-   ========================================== */
-
-/* Ogni offerta dispone carte e pulsante in colonna */
-#market-left,
-#market-right {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 10px;
-}
-
-/* Le carte restano raccolte nella propria riga */
-#market-left .market-cards,
-#market-right .market-cards {
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: flex-start;
-    gap: 12px;
-}
-
-/* Pulsanti A e B centrati sotto le rispettive carte */
-#market-left > .market-action,
-#market-right > .market-action {
-    display: block;
-    align-self: center;
-    margin: 0 auto;
-}
-
-/* La puntata e "Nessuno scambio" in colonna */
-#player-bid {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-}
-
-/* Evita che il pulsante della puntata slitti lateralmente */
-#player-bid > .market-action {
-    display: block;
-    align-self: center;
-    margin: 0 auto;
-}
-
-/* Puntata: carte in orizzontale, pulsante sotto */
-#player-bid {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -1553,12 +829,18 @@ button.primary {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
     gap: 8px;
 }
 
-#player-bid > .market-action {
-    align-self: center;
-    margin: 0 auto;
-}
+
+/* ==========================================
+   MANO
+   ========================================== */
+
+#hand {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    padding:
