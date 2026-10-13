@@ -31,24 +31,269 @@ body {
    HEADER
    ========================================== */
 
-header {
+/* ==========================================
+   HEADER GRAFICO — PECUNIA!
+   ========================================== */
+
+.pecunia-header {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    min-height: 190px;
+    padding: 28px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     text-align: center;
-    padding: 22px 20px 18px;
+    border-bottom:
+        1px solid rgba(231, 198, 90, 0.34);
+    background:
+        radial-gradient(
+            ellipse at 50% 40%,
+            rgba(80, 143, 86, 0.34) 0%,
+            rgba(35, 86, 47, 0.88) 58%,
+            #193c24 100%
+        );
+    box-shadow:
+        inset 0 -20px 28px rgba(0, 0, 0, 0.28),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
-header h1 {
-    margin: 0 0 7px;
-    font-family: Georgia, "Times New Roman", serif;
-    font-size: 34px;
+/* Texture del feltro */
+.pecunia-header::before {
+    content: "";
+    position: absolute;
+    z-index: -3;
+    inset: 0;
+    opacity: 0.42;
+    background-image:
+        repeating-linear-gradient(
+            0deg,
+            rgba(255, 255, 255, 0.025) 0,
+            rgba(255, 255, 255, 0.025) 1px,
+            transparent 1px,
+            transparent 4px
+        ),
+        repeating-linear-gradient(
+            90deg,
+            rgba(0, 0, 0, 0.025) 0,
+            rgba(0, 0, 0, 0.025) 1px,
+            transparent 1px,
+            transparent 5px
+        );
+    pointer-events: none;
+}
+
+/* Ombra/velatura: dà profondità e protegge il titolo */
+.pecunia-header::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    background:
+        linear-gradient(
+            90deg,
+            rgba(8, 24, 13, 0.68) 0%,
+            rgba(8, 24, 13, 0.12) 34%,
+            rgba(8, 24, 13, 0.12) 66%,
+            rgba(8, 24, 13, 0.68) 100%
+        );
+    pointer-events: none;
+}
+
+.header-content {
+    position: relative;
+    z-index: 2;
+}
+
+.pecunia-header h1 {
+    margin: 0 0 8px;
+    color: #fff4c6;
+    font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+    font-size: clamp(35px, 5vw, 58px);
     font-weight: 700;
-    letter-spacing: 0.04em;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.45);
+    letter-spacing: 0.10em;
+    text-shadow:
+        0 3px 2px rgba(0, 0, 0, 0.90),
+        0 0 16px rgba(0, 0, 0, 0.70);
 }
 
 #game-info {
+    position: relative;
+    color: #f2eed9;
     font-size: 13px;
-    color: #c7cec8;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.04em;
+    text-shadow:
+        0 1px 2px rgba(0, 0, 0, 0.90);
+}
+
+/* ==========================================
+   BANCONOTE DECORATIVE
+   ========================================== */
+
+.banknote {
+    position: absolute;
+    z-index: 0;
+    width: 210px;
+    height: 112px;
+    padding: 15px 17px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.42);
+    border-radius: 8px;
+    color: rgba(20, 29, 23, 0.84);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    text-align: left;
+    box-shadow:
+        0 11px 18px rgba(0, 0, 0, 0.38),
+        inset 0 0 0 3px rgba(255, 255, 255, 0.18);
+    opacity: 0.74;
+    filter: saturate(0.72) contrast(0.92);
+    user-select: none;
+    pointer-events: none;
+}
+
+/* Cornice e filigrana */
+.banknote::before {
+    content: "";
+    position: absolute;
+    inset: 8px;
+    border: 1px solid rgba(23, 35, 26, 0.28);
+    border-radius: 4px;
+    pointer-events: none;
+}
+
+.banknote::after {
+    content: "✦";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    font-size: 72px;
+    color: rgba(255, 255, 255, 0.22);
+    transform: translate(-50%, -50%);
+}
+
+.banknote span,
+.banknote strong,
+.banknote small {
+    position: relative;
+    z-index: 1;
+}
+
+.banknote span {
+    font-size: 25px;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.banknote strong {
+    align-self: center;
+    font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+    font-size: 42px;
+    line-height: 1;
+}
+
+.banknote small {
+    font-size: 8px;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    opacity: 0.70;
+}
+
+/* Valute e disposizione sovrapposta */
+.banknote-euro {
+    top: 18px;
+    left: 4%;
+    background:
+        linear-gradient(145deg, #c9e9f8, #6d9fc5);
+    transform: rotate(-13deg);
+}
+
+.banknote-dollar {
+    top: 38px;
+    left: 18%;
+    background:
+        linear-gradient(145deg, #cfeecf, #639e6d);
+    transform: rotate(11deg);
+}
+
+.banknote-franc {
+    top: 16px;
+    right: 17%;
+    background:
+        linear-gradient(145deg, #ebd2f2, #a66ab6);
+    transform: rotate(-10deg);
+}
+
+.banknote-pound {
+    top: 48px;
+    right: 3%;
+    background:
+        linear-gradient(145deg, #f1c9cc, #bd656e);
+    transform: rotate(13deg);
+}
+
+.banknote-yen {
+    bottom: -26px;
+    left: 39%;
+    background:
+        linear-gradient(145deg, #f9edba, #caa24a);
+    transform: rotate(-3deg);
+    opacity: 0.48;
+}
+
+/* Su schermi piccoli la grafica resta leggibile */
+@media (max-width: 700px) {
+    .pecunia-header {
+        min-height: 160px;
+        padding: 24px 12px;
+    }
+
+    .banknote {
+        width: 145px;
+        height: 82px;
+        padding: 10px 12px;
+        opacity: 0.50;
+    }
+
+    .banknote strong {
+        font-size: 30px;
+    }
+
+    .banknote span {
+        font-size: 19px;
+    }
+
+    .banknote small {
+        font-size: 6px;
+    }
+
+    .banknote-dollar,
+    .banknote-franc {
+        display: none;
+    }
+
+    .banknote-euro {
+        left: -34px;
+        top: 28px;
+    }
+
+    .banknote-pound {
+        right: -38px;
+        top: 32px;
+    }
+
+    .banknote-yen {
+        left: 34%;
+        bottom: -38px;
+    }
 }
 
 /* ==========================================
